@@ -134,12 +134,6 @@ const Login: React.FC = () => {
                Create one here
              </Link>
           </div>
-          
-          <div className="text-center text-xs text-gray-500 mt-6 bg-white/40 p-4 rounded-xl border border-white/50 backdrop-blur-sm">
-             <p className="mb-1 font-semibold uppercase tracking-wide">Demo Credentials</p>
-             <p>Admin: <span className="font-mono text-gray-700">admin@aaronenterprises.in</span> / <span className="font-mono text-gray-700">password123</span></p>
-             <p>User: <span className="font-mono text-gray-700">user@gmail.com</span> / <span className="font-mono text-gray-700">password123</span></p>
-          </div>
         </form>
       </div>
     </div>
