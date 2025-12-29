@@ -14,229 +14,177 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const STORAGE_KEYS = {
-  CURRENT_USER: 'ac_services_current_user',
-  ALL_USERS: 'ac_services_all_users', // Database of users
-  BOOKINGS: 'ac_services_bookings'
-};
-
-const INITIAL_BOOKINGS: Booking[] = [
-  {
-    id: 'bk_123',
-    userId: 'u_1',
-    customerName: 'Rajesh Koothrappali',
-    customerPhone: '9876543210',
-    customerAddress: 'Flat 402, DLF Phase 4, Gurugram',
-    serviceId: 'repair',
-    date: '2023-11-20',
-    time: '10:00 AM',
-    status: BookingStatus.PENDING,
-    acType: 'Split',
-    notes: 'AC not cooling properly',
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: 'bk_124',
-    userId: 'u_2',
-    customerName: 'Penny Smith',
-    customerPhone: '9123456789',
-    customerAddress: 'Villa 12, Nirvana Country, Gurugram',
-    planId: 'standard',
-    date: '2023-11-22',
-    time: '02:00 PM',
-    status: BookingStatus.CONFIRMED,
-    acType: 'Window',
-    createdAt: new Date().toISOString()
-  }
-];
-
-// Initial Admin User for demo
-const INITIAL_ADMIN: User = {
-  id: 'admin_1',
-  name: 'Admin User',
-  email: 'admin@aaronenterprises.in',
-  role: UserRole.ADMIN,
-  password: 'password123',
-  phone: '9999999999'
-};
-
-const INITIAL_CUSTOMER: User = {
-  id: 'user_1',
-  name: 'Demo User',
-  email: 'user@gmail.com',
-  role: UserRole.CUSTOMER,
-  password: 'password123',
-  phone: '8888888888'
-};
-
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [allUsers, setAllUsers] = useState<User[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Load initial data from localStorage
-  const loadData = useCallback(() => {
-    const storedCurrentUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
-    const storedAllUsers = localStorage.getItem(STORAGE_KEYS.ALL_USERS);
-    const storedBookings = localStorage.getItem(STORAGE_KEYS.BOOKINGS);
+  // Helper to get token
+  const getToken = () => localStorage.getItem('token');
 
-    // Load Users DB
-    if (storedAllUsers) {
-      try {
-        setAllUsers(JSON.parse(storedAllUsers));
-      } catch (e) {
-        console.error("Failed to parse users DB", e);
-        setAllUsers([INITIAL_ADMIN, INITIAL_CUSTOMER]);
-      }
-    } else {
-      const initialUsers = [INITIAL_ADMIN, INITIAL_CUSTOMER];
-      setAllUsers(initialUsers);
-      localStorage.setItem(STORAGE_KEYS.ALL_USERS, JSON.stringify(initialUsers));
+  const fetchBookings = useCallback(async () => {
+    const token = getToken();
+    if (!token) {
+      setBookings([]);
+      return;
     }
 
-    // Load Current Session
-    if (storedCurrentUser) {
-      try {
-        setUser(JSON.parse(storedCurrentUser));
-      } catch (e) {
-        console.error("Failed to parse current user", e);
+    try {
+      const response = await fetch('/api/bookings', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setBookings(data);
       }
-    }
-
-    // Load Bookings
-    if (storedBookings) {
-      try {
-        setBookings(JSON.parse(storedBookings));
-      } catch (e) {
-        console.error("Failed to parse bookings from storage", e);
-        setBookings(INITIAL_BOOKINGS);
-      }
-    } else {
-      setBookings(INITIAL_BOOKINGS);
-      localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(INITIAL_BOOKINGS));
+    } catch (error) {
+      console.error("Failed to fetch bookings", error);
     }
   }, []);
 
-  useEffect(() => {
-    loadData();
-    setIsInitialized(true);
-  }, [loadData]);
+  const loadUser = useCallback(async () => {
+    const token = getToken();
+    if (!token) {
+      setIsInitialized(true);
+      return;
+    }
 
-  // Sync across tabs
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEYS.BOOKINGS && e.newValue) {
-        setBookings(JSON.parse(e.newValue));
-      }
-      if (e.key === STORAGE_KEYS.ALL_USERS && e.newValue) {
-        setAllUsers(JSON.parse(e.newValue));
-      }
-    };
+    try {
+      const response = await fetch('/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  // Persist current session
-  useEffect(() => {
-    if (isInitialized) {
-      if (user) {
-        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+        // After user is loaded, fetch their bookings
+        await fetchBookings();
       } else {
-        localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+        localStorage.removeItem('token');
+        setUser(null);
       }
+    } catch (error) {
+      console.error("Failed to load user", error);
+      localStorage.removeItem('token');
+    } finally {
+      setIsInitialized(true);
     }
-  }, [user, isInitialized]);
+  }, [fetchBookings]);
 
-  // Persist all users DB
   useEffect(() => {
-    if (isInitialized && allUsers.length > 0) {
-      localStorage.setItem(STORAGE_KEYS.ALL_USERS, JSON.stringify(allUsers));
-    }
-  }, [allUsers, isInitialized]);
-
-  // Persist bookings on change
-  useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(bookings));
-    }
-  }, [bookings, isInitialized]);
+    loadUser();
+  }, [loadUser]);
 
   const login = async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 800));
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
-    // Refresh users from storage before login check to ensure we have latest signups
-    const currentUsers = JSON.parse(localStorage.getItem(STORAGE_KEYS.ALL_USERS) || JSON.stringify(allUsers));
-    const foundUser = currentUsers.find((u: User) => u.email.toLowerCase() === email.toLowerCase());
-    
-    if (!foundUser) {
-      return { success: false, message: 'User not found. Please sign up.' };
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        setUser(data);
+        await fetchBookings(); // Refresh bookings for logged in user
+        return { success: true };
+      } else {
+        return { success: false, message: data.message || 'Login failed' };
+      }
+    } catch (error) {
+      return { success: false, message: 'Network error' };
     }
-
-    if (foundUser.password !== password) {
-      return { success: false, message: 'Invalid credentials.' };
-    }
-
-    setUser(foundUser);
-    return { success: true };
   };
 
   const signup = async (userData: User): Promise<{ success: boolean; message?: string }> => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: userData.name,
+          email: userData.email,
+          phone: userData.phone,
+          password: userData.password
+        })
+      });
 
-    const existingUser = allUsers.find(u => u.email.toLowerCase() === userData.email.toLowerCase());
-    if (existingUser) {
-      return { success: false, message: 'Email already registered.' };
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        setUser(data);
+        return { success: true };
+      } else {
+        return { success: false, message: data.message || 'Signup failed' };
+      }
+    } catch (error) {
+      return { success: false, message: 'Network error' };
     }
-
-    const newUser = {
-      ...userData,
-      id: Math.random().toString(36).substr(2, 9),
-      role: UserRole.CUSTOMER // Default to customer
-    };
-
-    const updatedUsers = [...allUsers, newUser];
-    setAllUsers(updatedUsers);
-    localStorage.setItem(STORAGE_KEYS.ALL_USERS, JSON.stringify(updatedUsers)); // Immediate save
-    
-    setUser(newUser); // Auto login after signup
-    return { success: true };
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
     setUser(null);
-    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    setBookings([]);
   };
 
-  const addBooking = (newBookingData: Omit<Booking, 'id' | 'createdAt' | 'status' | 'userId'>) => {
-    const newBooking: Booking = {
-      ...newBookingData,
-      id: Math.random().toString(36).substr(2, 9),
-      userId: user?.id || null,
-      status: BookingStatus.PENDING,
-      createdAt: new Date().toISOString()
-    };
-    
-    // Update state and force immediate localStorage update to ensure availability in Admin
-    setBookings(prev => {
-      const updatedBookings = [newBooking, ...prev];
-      localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(updatedBookings));
-      return updatedBookings;
-    });
+  const addBooking = async (newBookingData: Omit<Booking, 'id' | 'createdAt' | 'status' | 'userId'>) => {
+    const token = getToken();
+    if (!token) return;
+
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(newBookingData)
+      });
+
+      if (response.ok) {
+        // Refresh bookings list
+        await fetchBookings();
+      } else {
+        console.error("Failed to create booking");
+      }
+    } catch (error) {
+      console.error("Error creating booking", error);
+    }
   };
 
-  const updateBookingStatus = (id: string, status: BookingStatus) => {
-    setBookings(prev => {
-      const updatedBookings = prev.map(b => b.id === id ? { ...b, status } : b);
-      localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(updatedBookings));
-      return updatedBookings;
-    });
+  const updateBookingStatus = async (id: string, status: BookingStatus) => {
+    const token = getToken();
+    if (!token) return;
+
+    try {
+      const response = await fetch(`/api/bookings/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status })
+      });
+
+      if (response.ok) {
+        // Optimistic update or refresh
+        setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+      }
+    } catch (error) {
+      console.error("Error updating booking", error);
+    }
   };
 
   const refreshData = () => {
-    loadData();
+    fetchBookings();
   };
 
   return (

@@ -358,9 +358,12 @@ const Booking: React.FC = () => {
                <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-8 shadow-inner animate-pulse">
                   <CheckCircle size={56} />
                </div>
-               <h2 className="text-3xl font-bold text-gray-900 mb-4">Booking Request Sent!</h2>
-               <p className="text-gray-600 mb-10 max-w-md text-lg">
-                 Thank you, {formData.name}. Your request for <strong>{selectedItem?.title}</strong> has been received. 
+               <h2 className="text-3xl font-bold text-gray-900 mb-4">Request Submitted</h2>
+               <p className="text-gray-600 mb-6 max-w-md text-lg">
+                 Thank you, {formData.name}. Your booking for <strong>{selectedItem?.title}</strong> has been placed in <span className="text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">Pending</span> status.
+               </p>
+               <p className="text-gray-500 mb-10 max-w-md text-sm">
+                  Our team will review your request and confirm the details shortly. You can track the status in your dashboard.
                </p>
                <div className="flex gap-4">
                   <button onClick={() => navigate('/')} className="px-8 py-3 border border-gray-300 bg-white/50 rounded-xl font-bold hover:bg-white transition-colors">Back to Home</button>

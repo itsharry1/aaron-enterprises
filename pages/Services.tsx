@@ -13,7 +13,7 @@ const Services: React.FC = () => {
     'service': Sparkles,
     'gas': Gauge,
     'emergency': Activity,
-    'uninstall': Wrench 
+    'uninstall': Wrench
   };
 
   return (

@@ -1,0 +1,62 @@
+import mongoose from 'mongoose';
+
+const bookingSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false // Allow guest bookings if needed, though frontend currently requires auth for dashboard
+  },
+  customerName: {
+    type: String,
+    required: true
+  },
+  customerPhone: {
+    type: String,
+    required: true
+  },
+  customerAddress: {
+    type: String,
+    required: true
+  },
+  serviceId: {
+    type: String
+  },
+  planId: {
+    type: String
+  },
+  date: {
+    type: String,
+    required: true
+  },
+  time: {
+    type: String,
+    required: true
+  },
+  status: {
+    type: String,
+    enum: ['Pending', 'Confirmed', 'Completed', 'Cancelled'],
+    default: 'Pending'
+  },
+  acType: {
+    type: String,
+    enum: ['Split', 'Window', 'Cassette', 'Tower', 'Other'],
+    default: 'Split'
+  },
+  notes: {
+    type: String
+  }
+}, {
+  timestamps: true
+});
+
+// Transform _id to id in JSON response
+bookingSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  }
+});
+
+const Booking = mongoose.model('Booking', bookingSchema);
+export default Booking;

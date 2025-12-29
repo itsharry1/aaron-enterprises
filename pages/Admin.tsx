@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { Navigate } from 'react-router-dom';
 import { UserRole, BookingStatus } from '../types';
-import { Check, X, Clock, Filter, Search, RefreshCw } from 'lucide-react';
+import { Check, X, Clock, Filter, Search, RefreshCw, AlertCircle, Calendar, MapPin, Bell } from 'lucide-react';
 
 const Admin: React.FC = () => {
   const { user, bookings, updateBookingStatus, refreshData } = useApp();
   const [statusFilter, setStatusFilter] = useState<BookingStatus | 'ALL'>('ALL');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [notification, setNotification] = useState<string | null>(null);
 
   // Refresh data on mount to ensure we see latest bookings from other sessions
   useEffect(() => {
@@ -20,10 +21,25 @@ const Admin: React.FC = () => {
     setTimeout(() => setIsRefreshing(false), 500);
   };
 
+  const handleStatusUpdate = (id: string, newStatus: BookingStatus) => {
+    updateBookingStatus(id, newStatus);
+    if (newStatus === BookingStatus.CONFIRMED) {
+      setNotification("Booking approved! Customer has been notified.");
+      setTimeout(() => setNotification(null), 4000);
+    } else if (newStatus === BookingStatus.CANCELLED) {
+      setNotification("Booking rejected. Status updated.");
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
+
   if (!user || user.role !== UserRole.ADMIN) {
     return <Navigate to="/login" />;
   }
 
+  const pendingBookings = bookings.filter(b => b.status === BookingStatus.PENDING);
+
+  // Filter for the main table - maybe we exclude Pending since they are at the top, or keep all.
+  // Showing all for completeness, or filtering based on selection.
   const filteredBookings = statusFilter === 'ALL' 
     ? bookings 
     : bookings.filter(b => b.status === statusFilter);
@@ -33,7 +49,16 @@ const Admin: React.FC = () => {
   const completedCount = bookings.filter(b => b.status === BookingStatus.COMPLETED).length;
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8 relative">
+      
+      {/* Toast Notification */}
+      {notification && (
+        <div className="fixed top-24 right-4 md:right-8 z-50 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 animate-slide-in-right">
+          <div className="bg-green-500 rounded-full p-1"><Check size={14} strokeWidth={3} /></div>
+          <span className="font-medium">{notification}</span>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 bg-white/60 backdrop-blur-md p-6 rounded-2xl shadow-glass border border-white/50 animate-fade-in-down">
           <div>
@@ -55,23 +80,78 @@ const Admin: React.FC = () => {
           </div>
         </header>
 
-        {/* Dynamic Stats Row - Click to filter */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 mb-8 animate-fade-in-up">
+        {/* Action Required Section - Prominent Display for Pending */}
+        {pendingBookings.length > 0 && (
+          <div className="mb-12 animate-fade-in-up">
+            <div className="flex items-center gap-3 mb-4">
+               <div className="bg-orange-100 p-2 rounded-lg text-orange-600 animate-pulse">
+                 <AlertCircle size={24} />
+               </div>
+               <h2 className="text-2xl font-bold text-gray-900">Pending Approvals</h2>
+               <span className="bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-orange-500/30">{pendingBookings.length} New</span>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pendingBookings.map(booking => (
+                <div key={booking.id} className="bg-white p-6 rounded-2xl shadow-xl border-l-4 border-orange-500 relative overflow-hidden group hover:scale-[1.01] transition-transform">
+                   <div className="flex justify-between items-start mb-4">
+                      <div>
+                         <h3 className="font-bold text-gray-900 text-lg">{booking.customerName}</h3>
+                         <p className="text-sm text-gray-500 font-medium">{booking.serviceId ? 'One-time Service' : 'AMC Plan Subscription'}</p>
+                      </div>
+                      <span className="bg-orange-50 text-orange-700 text-[10px] font-extrabold px-2 py-1 rounded border border-orange-100 uppercase tracking-wider">Pending</span>
+                   </div>
+                   
+                   <div className="space-y-3 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                      <div className="flex items-center gap-2.5 text-sm text-gray-700">
+                         <Calendar size={16} className="text-brand-500" /> <span className="font-semibold">{booking.date}</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 text-sm text-gray-700">
+                         <Clock size={16} className="text-brand-500" /> <span>{booking.time}</span>
+                      </div>
+                      <div className="flex items-start gap-2.5 text-sm text-gray-700">
+                         <MapPin size={16} className="text-brand-500 mt-0.5 shrink-0" /> <span className="line-clamp-2">{booking.customerAddress}</span>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-2 pt-2 border-t border-gray-200">
+                        Requested: {new Date(booking.createdAt).toLocaleDateString()}
+                      </div>
+                   </div>
+                   
+                   <div className="flex gap-3 mt-auto">
+                      <button 
+                        onClick={() => handleStatusUpdate(booking.id, BookingStatus.CONFIRMED)}
+                        className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 active:scale-95"
+                      >
+                        <Check size={18} /> Approve
+                      </button>
+                      <button 
+                        onClick={() => handleStatusUpdate(booking.id, BookingStatus.CANCELLED)}
+                        className="flex-1 bg-white border-2 border-red-100 text-red-500 hover:bg-red-50 hover:border-red-200 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
+                      >
+                        <X size={18} /> Reject
+                      </button>
+                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
            <div 
              onClick={() => setStatusFilter('ALL')}
              className={`bg-white/60 backdrop-blur-md p-6 rounded-2xl shadow-glass border transition-all cursor-pointer hover:-translate-y-1 ${statusFilter === 'ALL' ? 'border-brand-500 ring-2 ring-brand-500 ring-opacity-50' : 'border-white/50 hover:bg-white/80'}`}
            >
               <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wide">Total Bookings</h3>
               <p className="text-3xl font-extrabold text-gray-900 mt-2">{bookings.length}</p>
-              <span className="text-xs text-gray-400 mt-1 block font-medium">Click to view all</span>
            </div>
            <div 
              onClick={() => setStatusFilter(BookingStatus.PENDING)}
              className={`bg-white/60 backdrop-blur-md p-6 rounded-2xl shadow-glass border transition-all cursor-pointer hover:-translate-y-1 ${statusFilter === BookingStatus.PENDING ? 'border-orange-500 ring-2 ring-orange-500 ring-opacity-50' : 'border-white/50 hover:bg-white/80'}`}
            >
-              <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wide">Pending Requests</h3>
+              <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wide">Pending</h3>
               <p className="text-3xl font-extrabold text-orange-500 mt-2">{pendingCount}</p>
-              <span className="text-xs text-gray-400 mt-1 block font-medium">Action required</span>
            </div>
            <div 
              onClick={() => setStatusFilter(BookingStatus.CONFIRMED)}
@@ -79,7 +159,6 @@ const Admin: React.FC = () => {
            >
               <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wide">Confirmed</h3>
               <p className="text-3xl font-extrabold text-blue-500 mt-2">{confirmedCount}</p>
-              <span className="text-xs text-gray-400 mt-1 block font-medium">Scheduled</span>
            </div>
            <div 
              onClick={() => setStatusFilter(BookingStatus.COMPLETED)}
@@ -87,14 +166,13 @@ const Admin: React.FC = () => {
            >
               <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wide">Completed</h3>
               <p className="text-3xl font-extrabold text-green-500 mt-2">{completedCount}</p>
-              <span className="text-xs text-gray-400 mt-1 block font-medium">Finished jobs</span>
            </div>
         </div>
 
         {/* Filters and Search Bar Mock */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
            <h2 className="font-bold text-gray-900 text-xl pl-2 border-l-4 border-brand-500">
-             {statusFilter === 'ALL' ? 'All Bookings' : `${statusFilter} Bookings`}
+             {statusFilter === 'ALL' ? 'Booking History' : `${statusFilter} Bookings`}
            </h2>
            <div className="flex gap-3 w-full md:w-auto">
               <div className="relative flex-grow md:flex-grow-0">
@@ -112,7 +190,7 @@ const Admin: React.FC = () => {
         </div>
 
         {/* Bookings Table */}
-        <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-glass border border-white/50 overflow-hidden animate-zoom-in" style={{ animationDelay: '0.3s' }}>
+        <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-glass border border-white/50 overflow-hidden animate-zoom-in" style={{ animationDelay: '0.4s' }}>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-white/60">
               <thead className="bg-white/40">
@@ -158,14 +236,14 @@ const Admin: React.FC = () => {
                          {booking.status === BookingStatus.PENDING && (
                            <>
                              <button 
-                                onClick={() => updateBookingStatus(booking.id, BookingStatus.CONFIRMED)}
+                                onClick={() => handleStatusUpdate(booking.id, BookingStatus.CONFIRMED)}
                                 className="text-white bg-green-500 hover:bg-green-600 p-2 rounded-lg transition-colors shadow-sm"
                                 title="Approve & Confirm"
                               >
                                <Check size={18} />
                              </button>
                              <button 
-                                onClick={() => updateBookingStatus(booking.id, BookingStatus.CANCELLED)}
+                                onClick={() => handleStatusUpdate(booking.id, BookingStatus.CANCELLED)}
                                 className="text-white bg-red-500 hover:bg-red-600 p-2 rounded-lg transition-colors shadow-sm"
                                 title="Reject"
                              >

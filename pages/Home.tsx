@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Shield, Clock, Wrench, Zap, CheckCircle, Headphones, ArrowRight, Wind, Gauge, Calendar, Sparkles, Activity } from 'lucide-react';
+import { Star, Shield, Clock, Wrench, Zap, CheckCircle, ArrowRight, Wind, Gauge, Calendar, Sparkles, Headphones } from 'lucide-react';
 import { SERVICES, TESTIMONIALS, BRANDS, CITIES, AMC_PLANS } from '../constants';
 
 const Home: React.FC = () => {
@@ -34,12 +34,6 @@ const Home: React.FC = () => {
       title: "AC Cleaning",
       desc: "Deep cleaning services for filters, coils, and ducts. Improve air quality and efficiency.",
       link: "/book?service=service"
-    },
-    {
-      icon: Activity,
-      title: "Smart Monitoring",
-      desc: "IoT-enabled monitoring with real-time alerts, usage analytics, and predictive maintenance.",
-      link: "/contact"
     }
   ];
 
