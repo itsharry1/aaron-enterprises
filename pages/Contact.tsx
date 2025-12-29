@@ -1,7 +1,39 @@
-import React from 'react';
-import { Phone, Mail, MapPin, Clock, MessageCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Phone, Mail, MapPin, Clock, MessageCircle, Send } from 'lucide-react';
 
 const Contact: React.FC = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    message: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Construct the email subject
+    const subject = `New Inquiry from ${formData.name} - M/S Aaron Enterprises`;
+    
+    // Construct the email body with clear formatting
+    const body = `Name: ${formData.name}
+Phone: ${formData.phone}
+Email: ${formData.email}
+
+Message:
+${formData.message}`;
+
+    // Create the mailto link with encoded parameters
+    const mailtoLink = `mailto:aaronenterprisesae@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    // Open user's email client
+    window.location.href = mailtoLink;
+  };
+
   return (
     <div className="min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,27 +99,59 @@ const Contact: React.FC = () => {
           {/* Map & Form */}
           <div className="bg-white/60 backdrop-blur-md p-8 rounded-3xl shadow-glass border border-white/50 animate-slide-in-right">
              <h3 className="text-xl font-bold text-gray-900 mb-8">Send us a Message</h3>
-             <form className="space-y-6">
+             <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                    <div>
                       <label className="block text-sm font-bold text-gray-700 mb-2">Name</label>
-                      <input type="text" className="w-full rounded-xl border-white/60 border px-4 py-3 focus:ring-brand-500 focus:border-brand-500 bg-white/60 shadow-inner placeholder-gray-400" placeholder="Your Name" />
+                      <input 
+                        type="text" 
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-xl border-white/60 border px-4 py-3 focus:ring-brand-500 focus:border-brand-500 bg-white/60 shadow-inner placeholder-gray-400 transition-all" 
+                        placeholder="Your Name" 
+                      />
                    </div>
                    <div>
                       <label className="block text-sm font-bold text-gray-700 mb-2">Phone</label>
-                      <input type="tel" className="w-full rounded-xl border-white/60 border px-4 py-3 focus:ring-brand-500 focus:border-brand-500 bg-white/60 shadow-inner placeholder-gray-400" placeholder="Mobile Number" />
+                      <input 
+                        type="tel" 
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-xl border-white/60 border px-4 py-3 focus:ring-brand-500 focus:border-brand-500 bg-white/60 shadow-inner placeholder-gray-400 transition-all" 
+                        placeholder="Mobile Number" 
+                      />
                    </div>
                 </div>
                 <div>
                    <label className="block text-sm font-bold text-gray-700 mb-2">Email</label>
-                   <input type="email" className="w-full rounded-xl border-white/60 border px-4 py-3 focus:ring-brand-500 focus:border-brand-500 bg-white/60 shadow-inner placeholder-gray-400" placeholder="your@email.com" />
+                   <input 
+                      type="email" 
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full rounded-xl border-white/60 border px-4 py-3 focus:ring-brand-500 focus:border-brand-500 bg-white/60 shadow-inner placeholder-gray-400 transition-all" 
+                      placeholder="your@email.com" 
+                    />
                 </div>
                 <div>
                    <label className="block text-sm font-bold text-gray-700 mb-2">Message</label>
-                   <textarea rows={4} className="w-full rounded-xl border-white/60 border px-4 py-3 focus:ring-brand-500 focus:border-brand-500 bg-white/60 shadow-inner placeholder-gray-400" placeholder="How can we help you?"></textarea>
+                   <textarea 
+                      rows={4} 
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      className="w-full rounded-xl border-white/60 border px-4 py-3 focus:ring-brand-500 focus:border-brand-500 bg-white/60 shadow-inner placeholder-gray-400 transition-all" 
+                      placeholder="How can we help you?"
+                   ></textarea>
                 </div>
-                <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-brand-500/20 hover:scale-[1.02]">
-                   Send Message
+                <button type="submit" className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-brand-500/20 hover:scale-[1.02] flex items-center justify-center gap-2">
+                   Send Message <Send size={18} />
                 </button>
              </form>
           </div>
