@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { Navigate } from 'react-router-dom';
 import { UserRole, BookingStatus } from '../types';
-import { Check, X, Clock, Filter, Search } from 'lucide-react';
+import { Check, X, Clock, Filter, Search, RefreshCw } from 'lucide-react';
 
 const Admin: React.FC = () => {
-  const { user, bookings, updateBookingStatus } = useApp();
+  const { user, bookings, updateBookingStatus, refreshData } = useApp();
   const [statusFilter, setStatusFilter] = useState<BookingStatus | 'ALL'>('ALL');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Refresh data on mount to ensure we see latest bookings from other sessions
+  useEffect(() => {
+    refreshData();
+  }, []);
+
+  const handleManualRefresh = () => {
+    setIsRefreshing(true);
+    refreshData();
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
 
   if (!user || user.role !== UserRole.ADMIN) {
     return <Navigate to="/login" />;
@@ -28,9 +40,18 @@ const Admin: React.FC = () => {
              <h1 className="text-3xl font-extrabold text-gray-900">Admin Panel</h1>
              <p className="text-gray-600 font-medium">Manage bookings, technicians and services</p>
           </div>
-          <div className="bg-white/80 px-4 py-2 rounded-xl shadow-sm border border-white/60 font-bold flex items-center gap-2 text-sm text-gray-800">
-             <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
-             Admin: {user.name}
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={handleManualRefresh}
+              className={`p-2 rounded-full bg-white/50 hover:bg-white text-gray-600 hover:text-brand-600 transition-all ${isRefreshing ? 'animate-spin' : ''}`}
+              title="Refresh Data"
+            >
+              <RefreshCw size={20} />
+            </button>
+            <div className="bg-white/80 px-4 py-2 rounded-xl shadow-sm border border-white/60 font-bold flex items-center gap-2 text-sm text-gray-800">
+               <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
+               Admin: {user.name}
+            </div>
           </div>
         </header>
 

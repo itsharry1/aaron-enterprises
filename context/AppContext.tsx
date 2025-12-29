@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User, Booking, UserRole, BookingStatus } from '../types';
 
 interface AppContextType {
@@ -9,6 +9,7 @@ interface AppContextType {
   bookings: Booking[];
   addBooking: (booking: Omit<Booking, 'id' | 'createdAt' | 'status' | 'userId'>) => void;
   updateBookingStatus: (id: string, status: BookingStatus) => void;
+  refreshData: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -75,7 +76,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Load initial data from localStorage
-  useEffect(() => {
+  const loadData = useCallback(() => {
     const storedCurrentUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
     const storedAllUsers = localStorage.getItem(STORAGE_KEYS.ALL_USERS);
     const storedBookings = localStorage.getItem(STORAGE_KEYS.BOOKINGS);
@@ -115,8 +116,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setBookings(INITIAL_BOOKINGS);
       localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(INITIAL_BOOKINGS));
     }
-    
+  }, []);
+
+  useEffect(() => {
+    loadData();
     setIsInitialized(true);
+  }, [loadData]);
+
+  // Sync across tabs
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEYS.BOOKINGS && e.newValue) {
+        setBookings(JSON.parse(e.newValue));
+      }
+      if (e.key === STORAGE_KEYS.ALL_USERS && e.newValue) {
+        setAllUsers(JSON.parse(e.newValue));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   // Persist current session
@@ -148,7 +167,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    const foundUser = allUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+    // Refresh users from storage before login check to ensure we have latest signups
+    const currentUsers = JSON.parse(localStorage.getItem(STORAGE_KEYS.ALL_USERS) || JSON.stringify(allUsers));
+    const foundUser = currentUsers.find((u: User) => u.email.toLowerCase() === email.toLowerCase());
     
     if (!foundUser) {
       return { success: false, message: 'User not found. Please sign up.' };
@@ -176,13 +197,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       role: UserRole.CUSTOMER // Default to customer
     };
 
-    setAllUsers(prev => [...prev, newUser]);
+    const updatedUsers = [...allUsers, newUser];
+    setAllUsers(updatedUsers);
+    localStorage.setItem(STORAGE_KEYS.ALL_USERS, JSON.stringify(updatedUsers)); // Immediate save
+    
     setUser(newUser); // Auto login after signup
     return { success: true };
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
   };
 
   const addBooking = (newBookingData: Omit<Booking, 'id' | 'createdAt' | 'status' | 'userId'>) => {
@@ -193,15 +218,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       status: BookingStatus.PENDING,
       createdAt: new Date().toISOString()
     };
-    setBookings(prev => [newBooking, ...prev]);
+    
+    // Update state and force immediate localStorage update to ensure availability in Admin
+    setBookings(prev => {
+      const updatedBookings = [newBooking, ...prev];
+      localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(updatedBookings));
+      return updatedBookings;
+    });
   };
 
   const updateBookingStatus = (id: string, status: BookingStatus) => {
-    setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+    setBookings(prev => {
+      const updatedBookings = prev.map(b => b.id === id ? { ...b, status } : b);
+      localStorage.setItem(STORAGE_KEYS.BOOKINGS, JSON.stringify(updatedBookings));
+      return updatedBookings;
+    });
+  };
+
+  const refreshData = () => {
+    loadData();
   };
 
   return (
-    <AppContext.Provider value={{ user, login, signup, logout, bookings, addBooking, updateBookingStatus }}>
+    <AppContext.Provider value={{ user, login, signup, logout, bookings, addBooking, updateBookingStatus, refreshData }}>
       {children}
     </AppContext.Provider>
   );
