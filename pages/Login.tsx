@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { UserRole } from '../types';
 import { ShieldCheck, Loader2, AlertCircle, Mail, Lock } from 'lucide-react';
@@ -12,6 +12,7 @@ const Login: React.FC = () => {
   
   const { login } = useApp();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,10 +23,12 @@ const Login: React.FC = () => {
       const result = await login(email, password);
       
       if (result.success) {
-        // Retrieve user to check role, but navigation happens based on state update or explicit check
-        // Since state update is async, we can check email for admin routing as a shortcut or wait for context
-        // For smoother UX, we'll route based on the successful login logic
-        if (email.includes('admin')) {
+        // Check if there's a return path
+        const from = location.state?.from;
+
+        if (from) {
+          navigate(from);
+        } else if (email.includes('admin')) {
            navigate('/admin');
         } else {
            navigate('/dashboard');
@@ -114,7 +117,7 @@ const Login: React.FC = () => {
                <label className="ml-2 block text-sm text-gray-900 font-medium">Remember me</label>
             </div>
             <div className="text-sm">
-               <a href="#" className="font-bold text-brand-600 hover:text-brand-500 hover:underline">Forgot password?</a>
+               <Link to="/forgot-password" className="font-bold text-brand-600 hover:text-brand-500 hover:underline">Forgot password?</Link>
             </div>
           </div>
 

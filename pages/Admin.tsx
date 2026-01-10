@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { Navigate } from 'react-router-dom';
 import { UserRole, BookingStatus } from '../types';
-import { Check, X, Clock, Filter, Search, RefreshCw, AlertCircle, Calendar, MapPin, Bell } from 'lucide-react';
+import { Check, X, Clock, Filter, Search, RefreshCw, AlertCircle, Calendar, MapPin, FileText, CheckCircle, XCircle } from 'lucide-react';
 
 const Admin: React.FC = () => {
   const { user, bookings, updateBookingStatus, refreshData } = useApp();
@@ -38,8 +38,7 @@ const Admin: React.FC = () => {
 
   const pendingBookings = bookings.filter(b => b.status === BookingStatus.PENDING);
 
-  // Filter for the main table - maybe we exclude Pending since they are at the top, or keep all.
-  // Showing all for completeness, or filtering based on selection.
+  // Filter for the main table
   const filteredBookings = statusFilter === 'ALL' 
     ? bookings 
     : bookings.filter(b => b.status === statusFilter);
@@ -47,6 +46,45 @@ const Admin: React.FC = () => {
   const pendingCount = bookings.filter(b => b.status === BookingStatus.PENDING).length;
   const confirmedCount = bookings.filter(b => b.status === BookingStatus.CONFIRMED).length;
   const completedCount = bookings.filter(b => b.status === BookingStatus.COMPLETED).length;
+  const cancelledCount = bookings.filter(b => b.status === BookingStatus.CANCELLED).length;
+
+  const StatCard = ({ 
+    title, 
+    count, 
+    icon: Icon, 
+    colorClass, 
+    bgClass, 
+    filterType 
+  }: { 
+    title: string, 
+    count: number, 
+    icon: any, 
+    colorClass: string, 
+    bgClass: string,
+    filterType: BookingStatus | 'ALL'
+  }) => (
+    <div 
+      onClick={() => setStatusFilter(filterType)}
+      className={`relative overflow-hidden p-6 rounded-2xl border transition-all cursor-pointer hover:-translate-y-1 group ${
+        statusFilter === filterType 
+          ? `ring-2 ring-offset-2 ${colorClass.replace('text-', 'ring-')}` 
+          : 'border-white/50 hover:border-white/80'
+      } bg-white/70 backdrop-blur-md shadow-glass`}
+    >
+       <div className={`absolute top-0 right-0 p-4 opacity-10 transform translate-x-2 -translate-y-2 group-hover:scale-110 transition-transform ${colorClass}`}>
+          <Icon size={64} />
+       </div>
+       <div className="relative z-10 flex flex-col justify-between h-full">
+          <div className={`p-3 rounded-xl w-fit mb-4 ${bgClass} ${colorClass}`}>
+             <Icon size={24} />
+          </div>
+          <div>
+            <p className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">{title}</p>
+            <h3 className="text-3xl font-extrabold text-gray-900">{count}</h3>
+          </div>
+       </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen p-4 md:p-8 relative">
@@ -138,41 +176,53 @@ const Admin: React.FC = () => {
         )}
 
         {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-           <div 
-             onClick={() => setStatusFilter('ALL')}
-             className={`bg-white/60 backdrop-blur-md p-6 rounded-2xl shadow-glass border transition-all cursor-pointer hover:-translate-y-1 ${statusFilter === 'ALL' ? 'border-brand-500 ring-2 ring-brand-500 ring-opacity-50' : 'border-white/50 hover:bg-white/80'}`}
-           >
-              <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wide">Total Bookings</h3>
-              <p className="text-3xl font-extrabold text-gray-900 mt-2">{bookings.length}</p>
-           </div>
-           <div 
-             onClick={() => setStatusFilter(BookingStatus.PENDING)}
-             className={`bg-white/60 backdrop-blur-md p-6 rounded-2xl shadow-glass border transition-all cursor-pointer hover:-translate-y-1 ${statusFilter === BookingStatus.PENDING ? 'border-orange-500 ring-2 ring-orange-500 ring-opacity-50' : 'border-white/50 hover:bg-white/80'}`}
-           >
-              <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wide">Pending</h3>
-              <p className="text-3xl font-extrabold text-orange-500 mt-2">{pendingCount}</p>
-           </div>
-           <div 
-             onClick={() => setStatusFilter(BookingStatus.CONFIRMED)}
-             className={`bg-white/60 backdrop-blur-md p-6 rounded-2xl shadow-glass border transition-all cursor-pointer hover:-translate-y-1 ${statusFilter === BookingStatus.CONFIRMED ? 'border-blue-500 ring-2 ring-blue-500 ring-opacity-50' : 'border-white/50 hover:bg-white/80'}`}
-           >
-              <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wide">Confirmed</h3>
-              <p className="text-3xl font-extrabold text-blue-500 mt-2">{confirmedCount}</p>
-           </div>
-           <div 
-             onClick={() => setStatusFilter(BookingStatus.COMPLETED)}
-             className={`bg-white/60 backdrop-blur-md p-6 rounded-2xl shadow-glass border transition-all cursor-pointer hover:-translate-y-1 ${statusFilter === BookingStatus.COMPLETED ? 'border-green-500 ring-2 ring-green-500 ring-opacity-50' : 'border-white/50 hover:bg-white/80'}`}
-           >
-              <h3 className="text-gray-500 text-sm font-bold uppercase tracking-wide">Completed</h3>
-              <p className="text-3xl font-extrabold text-green-500 mt-2">{completedCount}</p>
-           </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+           <StatCard 
+             title="Total Bookings" 
+             count={bookings.length} 
+             icon={FileText} 
+             colorClass="text-brand-600" 
+             bgClass="bg-brand-50"
+             filterType="ALL"
+           />
+           <StatCard 
+             title="Pending" 
+             count={pendingCount} 
+             icon={AlertCircle} 
+             colorClass="text-orange-600" 
+             bgClass="bg-orange-50"
+             filterType={BookingStatus.PENDING}
+           />
+           <StatCard 
+             title="Confirmed" 
+             count={confirmedCount} 
+             icon={CheckCircle} 
+             colorClass="text-blue-600" 
+             bgClass="bg-blue-50"
+             filterType={BookingStatus.CONFIRMED}
+           />
+           <StatCard 
+             title="Completed" 
+             count={completedCount} 
+             icon={Check} 
+             colorClass="text-green-600" 
+             bgClass="bg-green-50"
+             filterType={BookingStatus.COMPLETED}
+           />
+           <StatCard 
+             title="Cancelled" 
+             count={cancelledCount} 
+             icon={XCircle} 
+             colorClass="text-red-600" 
+             bgClass="bg-red-50"
+             filterType={BookingStatus.CANCELLED}
+           />
         </div>
 
         {/* Filters and Search Bar Mock */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
            <h2 className="font-bold text-gray-900 text-xl pl-2 border-l-4 border-brand-500">
-             {statusFilter === 'ALL' ? 'Booking History' : `${statusFilter} Bookings`}
+             {statusFilter === 'ALL' ? 'All Booking History' : `${statusFilter} Bookings`}
            </h2>
            <div className="flex gap-3 w-full md:w-auto">
               <div className="relative flex-grow md:flex-grow-0">

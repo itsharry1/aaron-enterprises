@@ -42,6 +42,13 @@ export const SERVICES: Service[] = [
     description: 'Safe removal of AC units with gas locking technology.',
     image: 'https://picsum.photos/800/600?random=5',
     features: ['Pump down gas lock', 'Pipe safety', 'Hole sealing', 'Packing assistance']
+  },
+  {
+    id: 'ac-sale',
+    title: 'Buy AC',
+    description: 'Best deals on brand new Split and Window ACs. Selling all major brands with installation support.',
+    image: 'https://picsum.photos/800/600?random=7',
+    features: ['Best market prices', 'Free installation included', 'All major brands', 'Warranty support']
   }
 ];
 

@@ -12,6 +12,9 @@ import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import ShopAC from './pages/ShopAC';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -37,9 +40,12 @@ const App: React.FC = () => {
               <Route path="/services" element={<Services />} />
               <Route path="/amc" element={<AMCPlans />} />
               <Route path="/book" element={<Booking />} />
+              <Route path="/shop-ac" element={<ShopAC />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/resetpassword/:token" element={<ResetPassword />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin" element={<Admin />} />
             </Routes>

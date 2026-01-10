@@ -38,16 +38,26 @@ export interface AMCPlan {
   recommended?: boolean;
 }
 
+export type BookingType = 'SERVICE' | 'AMC' | 'PURCHASE';
+
+export interface PurchaseDetails {
+  brands: string[];
+  tonnage: string;
+  budget: string;
+}
+
 export interface Booking {
   id: string;
   userId: string | null; // null if guest
   customerName: string;
   customerPhone: string;
   customerAddress: string;
+  bookingType: BookingType;
   serviceId?: string; // If booking a specific service
   planId?: string; // If buying a plan
-  date: string;
-  time: string;
+  purchaseDetails?: PurchaseDetails; // If buying an AC
+  date?: string; // Optional for purchases
+  time?: string; // Optional for purchases
   status: BookingStatus;
   acType: 'Split' | 'Window' | 'Cassette' | 'Other';
   notes?: string;

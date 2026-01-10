@@ -34,6 +34,29 @@ const Booking: React.FC = () => {
     notes: ''
   });
 
+  // Check for saved booking data if user just logged in
+  useEffect(() => {
+    const savedBooking = localStorage.getItem('tempBookingData');
+    if (savedBooking && user) {
+      try {
+        const parsed = JSON.parse(savedBooking);
+        setFormData(parsed);
+        setStep(2); // Skip to review step
+        localStorage.removeItem('tempBookingData'); // Clear saved data
+      } catch (e) {
+        console.error("Failed to parse saved booking", e);
+      }
+    } else if (user && !formData.name) {
+      // If user logged in but no saved data, ensure name/phone are populated if empty
+      setFormData(prev => ({
+        ...prev,
+        name: user.name,
+        phone: user.phone || prev.phone,
+        email: user.email
+      }));
+    }
+  }, [user]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     // Clear error for this field if it exists
@@ -72,6 +95,14 @@ const Booking: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
+      // Check for authentication before proceeding to Step 2
+      if (!user) {
+        // Save current form data
+        localStorage.setItem('tempBookingData', JSON.stringify(formData));
+        // Redirect to login with return path
+        navigate('/login', { state: { from: '/book' } });
+        return;
+      }
       setStep(2);
     }
   };
@@ -84,6 +115,7 @@ const Booking: React.FC = () => {
         customerName: formData.name,
         customerPhone: formData.phone,
         customerAddress: formData.address,
+        bookingType: formData.serviceType === 'one-time' ? 'SERVICE' : 'AMC',
         serviceId: formData.serviceType === 'one-time' ? formData.selectedId : undefined,
         planId: formData.serviceType === 'amc' ? formData.selectedId : undefined,
         date: formData.date,
@@ -291,7 +323,7 @@ const Booking: React.FC = () => {
                   type="submit"
                   className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-brand-500/30 transition-all flex items-center justify-center gap-2 text-lg hover:scale-[1.02]"
                 >
-                  Review Booking
+                  {user ? "Review Booking" : "Login to Continue"}
                 </button>
               </form>
             </div>

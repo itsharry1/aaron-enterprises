@@ -18,19 +18,29 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  bookingType: {
+    type: String,
+    enum: ['SERVICE', 'AMC', 'PURCHASE'],
+    default: 'SERVICE'
+  },
   serviceId: {
     type: String
   },
   planId: {
     type: String
   },
+  purchaseDetails: {
+    brands: [String],
+    tonnage: String,
+    budget: String
+  },
   date: {
     type: String,
-    required: true
+    required: false // Not required for PURCHASE
   },
   time: {
     type: String,
-    required: true
+    required: false // Not required for PURCHASE
   },
   status: {
     type: String,

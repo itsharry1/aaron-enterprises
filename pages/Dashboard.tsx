@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { Navigate } from 'react-router-dom';
-import { Calendar, User, Settings, Package, LogOut, CheckCircle, Clock, Menu } from 'lucide-react';
+import { Calendar, User, Settings, Package, LogOut, CheckCircle, Clock, Menu, ShoppingBag } from 'lucide-react';
 
 type DashboardView = 'bookings' | 'amc' | 'profile' | 'settings';
 
@@ -17,13 +17,61 @@ const Dashboard: React.FC = () => {
   const userBookings = bookings.filter(b => b.userId === user.id || b.customerName === user.name);
   const activeAMC = userBookings.filter(b => b.planId && b.status === 'Confirmed');
 
+  const renderBookingCard = (booking: any) => {
+    const isPurchase = booking.bookingType === 'PURCHASE';
+    const isAMC = booking.bookingType === 'AMC' || (booking.planId && !booking.serviceId);
+    
+    let title = 'Service Booking';
+    if (isPurchase) title = 'Product Inquiry';
+    else if (isAMC) title = 'AMC Purchase';
+
+    let details = booking.serviceId ? 'Service' : 'Plan';
+    if (isPurchase) {
+       details = `${booking.acType} AC - ${booking.purchaseDetails?.tonnage || 'Standard'}`;
+    }
+
+    return (
+       <div key={booking.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between hover:bg-white/40 transition-colors">
+          <div className="mb-4 md:mb-0">
+             <div className="flex items-center gap-3 mb-2">
+               <span className="font-bold text-gray-900 text-lg">{title}</span>
+               <span className={`text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wide ${
+                 booking.status === 'Confirmed' ? 'bg-green-100 text-green-700' : 
+                 booking.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'
+               }`}>{booking.status}</span>
+             </div>
+             
+             {!isPurchase && (
+                <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                   <span className="flex items-center gap-1.5 bg-white/50 px-2 py-1 rounded-md"><Calendar size={14}/> {booking.date}</span>
+                   <span className="flex items-center gap-1.5 bg-white/50 px-2 py-1 rounded-md"><Clock size={14}/> {booking.time}</span>
+                </div>
+             )}
+
+             <p className="text-sm text-gray-600 bg-white/30 p-2.5 rounded-lg border border-white/40 inline-block">
+               {isPurchase ? (
+                  <span className="flex items-center gap-2"><ShoppingBag size={14}/> <strong>Request:</strong> {details}</span>
+               ) : (
+                  <><span className="font-semibold">{booking.acType} AC</span> • {booking.customerAddress}</>
+               )}
+             </p>
+          </div>
+          <div className="text-right">
+             <button className="text-brand-600 text-sm font-bold hover:text-brand-700 bg-white/50 hover:bg-white px-4 py-2 rounded-xl border border-white/50 shadow-sm transition-all">
+               View Details
+             </button>
+          </div>
+       </div>
+    );
+  };
+
   const renderContent = () => {
     switch(activeView) {
       case 'bookings':
         return (
           <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-glass overflow-hidden border border-white/50 animate-fade-in-up">
              <div className="px-6 py-5 border-b border-white/50 bg-white/40 flex justify-between items-center">
-                <h3 className="font-bold text-gray-900 text-lg">Recent Bookings</h3>
+                <h3 className="font-bold text-gray-900 text-lg">Recent Activity</h3>
                 <span className="text-xs font-bold text-gray-500 bg-white/50 px-2 py-1 rounded-lg">{userBookings.length} total</span>
              </div>
              
@@ -37,31 +85,7 @@ const Dashboard: React.FC = () => {
                </div>
              ) : (
                <div className="divide-y divide-white/50">
-                 {userBookings.map((booking) => (
-                   <div key={booking.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between hover:bg-white/40 transition-colors">
-                      <div className="mb-4 md:mb-0">
-                         <div className="flex items-center gap-3 mb-2">
-                           <span className="font-bold text-gray-900 text-lg">{booking.serviceId ? 'Service Booking' : 'AMC Purchase'}</span>
-                           <span className={`text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wide ${
-                             booking.status === 'Confirmed' ? 'bg-green-100 text-green-700' : 
-                             booking.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'
-                           }`}>{booking.status}</span>
-                         </div>
-                         <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                            <span className="flex items-center gap-1.5 bg-white/50 px-2 py-1 rounded-md"><Calendar size={14}/> {booking.date}</span>
-                            <span className="flex items-center gap-1.5 bg-white/50 px-2 py-1 rounded-md"><Clock size={14}/> {booking.time}</span>
-                         </div>
-                         <p className="text-sm text-gray-600 bg-white/30 p-2.5 rounded-lg border border-white/40 inline-block">
-                           <span className="font-semibold">{booking.acType} AC</span> • {booking.customerAddress}
-                         </p>
-                      </div>
-                      <div className="text-right">
-                         <button className="text-brand-600 text-sm font-bold hover:text-brand-700 bg-white/50 hover:bg-white px-4 py-2 rounded-xl border border-white/50 shadow-sm transition-all">
-                           View Details
-                         </button>
-                      </div>
-                   </div>
-                 ))}
+                 {userBookings.map(renderBookingCard)}
                </div>
              )}
           </div>

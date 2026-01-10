@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Sparkles, Gauge, Wrench, Activity, Wind, Info, ChevronRight, Check } from 'lucide-react';
+import { Calendar, Sparkles, Gauge, Wrench, Activity, Wind, Info, ChevronRight, Check, ShoppingBag } from 'lucide-react';
 import { SERVICES } from '../constants';
 
 const Services: React.FC = () => {
@@ -13,7 +13,16 @@ const Services: React.FC = () => {
     'service': Sparkles,
     'gas': Gauge,
     'emergency': Activity,
-    'uninstall': Wrench
+    'uninstall': Wrench,
+    'ac-sale': ShoppingBag
+  };
+
+  const handleBookClick = (serviceId: string) => {
+    if (serviceId === 'ac-sale') {
+      navigate('/shop-ac');
+    } else {
+      navigate(`/book?service=${serviceId}`);
+    }
   };
 
   return (
@@ -53,6 +62,8 @@ const Services: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {SERVICES.map((service, i) => {
             const Icon = iconMap[service.id] || Wrench;
+            const isSale = service.id === 'ac-sale';
+            
             return (
               <div 
                 key={service.id}
@@ -94,10 +105,14 @@ const Services: React.FC = () => {
                 {/* Action */}
                 <div className="p-6 bg-white/40 border-t border-white/60">
                    <button 
-                     onClick={() => navigate(`/book?service=${service.id}`)}
-                     className="w-full bg-white hover:bg-brand-50 text-brand-700 font-bold py-4 rounded-xl border border-brand-200 hover:border-brand-300 transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 hover:scale-105"
+                     onClick={() => handleBookClick(service.id)}
+                     className={`w-full bg-white hover:bg-brand-50 text-brand-700 font-bold py-4 rounded-xl border border-brand-200 hover:border-brand-300 transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 hover:scale-105 ${isSale ? 'text-orange-600 border-orange-200 hover:bg-orange-50 hover:border-orange-300' : ''}`}
                    >
-                     Book Service
+                     {isSale ? (
+                       <>Shop Now <ShoppingBag size={18} /></>
+                     ) : (
+                       "Book Service"
+                     )}
                    </button>
                 </div>
               </div>
