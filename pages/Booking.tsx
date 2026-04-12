@@ -95,14 +95,7 @@ const Booking: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      // Check for authentication before proceeding to Step 2
-      if (!user) {
-        // Save current form data
-        localStorage.setItem('tempBookingData', JSON.stringify(formData));
-        // Redirect to login with return path
-        navigate('/login', { state: { from: '/book' } });
-        return;
-      }
+      // Allow guest booking - removed auth check
       setStep(2);
     }
   };
@@ -158,7 +151,7 @@ const Booking: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 
                 {/* Service Selection Toggle */}
-                <div className="flex bg-white/50 p-1.5 rounded-xl mb-8 border border-white/60">
+                <div className="flex bg-white/50 p-1.5 rounded-xl mb-8 border border-white/60 animate-fade-in-up" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
                   <button
                     type="button"
                     className={`flex-1 py-2.5 rounded-lg font-bold text-sm transition-all ${formData.serviceType === 'one-time' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-white/40'}`}
@@ -175,7 +168,7 @@ const Booking: React.FC = () => {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Select {formData.serviceType === 'one-time' ? 'Service' : 'Plan'}</label>
                     <div className="relative">
@@ -218,7 +211,7 @@ const Booking: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in-up" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Date</label>
                     <div className="relative">
@@ -262,7 +255,7 @@ const Booking: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="border-t border-gray-200/50 pt-8 mt-8">
+                <div className="border-t border-gray-200/50 pt-8 mt-8 animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
                   <h3 className="text-lg font-bold mb-6 text-gray-800">Personal Details</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
@@ -321,9 +314,10 @@ const Booking: React.FC = () => {
 
                 <button 
                   type="submit"
-                  className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-brand-500/30 transition-all flex items-center justify-center gap-2 text-lg hover:scale-[1.02]"
+                  className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-brand-500/30 transition-all flex items-center justify-center gap-2 text-lg hover:scale-[1.02] animate-fade-in-up"
+                  style={{ animationDelay: '0.5s', animationFillMode: 'both' }}
                 >
-                  {user ? "Review Booking" : "Login to Continue"}
+                  Review Booking
                 </button>
               </form>
             </div>
@@ -395,11 +389,15 @@ const Booking: React.FC = () => {
                  Thank you, {formData.name}. Your booking for <strong>{selectedItem?.title}</strong> has been placed in <span className="text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded">Pending</span> status.
                </p>
                <p className="text-gray-500 mb-10 max-w-md text-sm">
-                  Our team will review your request and confirm the details shortly. You can track the status in your dashboard.
+                  {user 
+                    ? "Our team will review your request and confirm the details shortly. You can track the status in your dashboard."
+                    : "Our team will review your request and contact you shortly to confirm the details."}
                </p>
                <div className="flex gap-4">
                   <button onClick={() => navigate('/')} className="px-8 py-3 border border-gray-300 bg-white/50 rounded-xl font-bold hover:bg-white transition-colors">Back to Home</button>
-                  <button onClick={() => navigate('/dashboard')} className="px-8 py-3 bg-brand-600 text-white rounded-xl font-bold hover:bg-brand-700 shadow-lg shadow-brand-500/30 transition-transform hover:scale-105">Go to Dashboard</button>
+                  {user && (
+                    <button onClick={() => navigate('/dashboard')} className="px-8 py-3 bg-brand-600 text-white rounded-xl font-bold hover:bg-brand-700 shadow-lg shadow-brand-500/30 transition-transform hover:scale-105">Go to Dashboard</button>
+                  )}
                </div>
             </div>
           )}

@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { Navigate } from 'react-router-dom';
-import { Calendar, User, Settings, Package, LogOut, CheckCircle, Clock, Menu, ShoppingBag } from 'lucide-react';
+import { Calendar, User, Package, LogOut, CheckCircle, Clock, Menu, ShoppingBag, Mail, Phone, MapPin, ShieldCheck, Camera } from 'lucide-react';
 
-type DashboardView = 'bookings' | 'amc' | 'profile' | 'settings';
+type DashboardView = 'bookings' | 'amc' | 'profile';
 
 const Dashboard: React.FC = () => {
-  const { user, bookings, logout } = useApp();
+  const { user, bookings, logout, refreshData } = useApp();
   const [activeView, setActiveView] = useState<DashboardView>('bookings');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
 
   if (!user) {
     return <Navigate to="/login" />;
@@ -37,7 +41,7 @@ const Dashboard: React.FC = () => {
                <span className="font-bold text-gray-900 text-lg">{title}</span>
                <span className={`text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wide ${
                  booking.status === 'Confirmed' ? 'bg-green-100 text-green-700' : 
-                 booking.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'
+                 booking.status === 'Pending' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700'
                }`}>{booking.status}</span>
              </div>
              
@@ -69,7 +73,7 @@ const Dashboard: React.FC = () => {
     switch(activeView) {
       case 'bookings':
         return (
-          <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-glass overflow-hidden border border-white/50 animate-fade-in-up">
+          <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-glass overflow-hidden border border-white/50 animate-fade-in-up" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
              <div className="px-6 py-5 border-b border-white/50 bg-white/40 flex justify-between items-center">
                 <h3 className="font-bold text-gray-900 text-lg">Recent Activity</h3>
                 <span className="text-xs font-bold text-gray-500 bg-white/50 px-2 py-1 rounded-lg">{userBookings.length} total</span>
@@ -92,7 +96,7 @@ const Dashboard: React.FC = () => {
         );
       case 'amc':
         return (
-          <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-glass overflow-hidden border border-white/50 p-8 animate-fade-in-up">
+          <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-glass overflow-hidden border border-white/50 p-8 animate-fade-in-up" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
             <h3 className="font-bold text-gray-900 text-xl mb-6">My AMC Plans</h3>
             {activeAMC.length > 0 ? (
                <div className="grid gap-6">
@@ -136,31 +140,95 @@ const Dashboard: React.FC = () => {
         );
       case 'profile':
         return (
-          <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-glass overflow-hidden border border-white/50 p-8 animate-fade-in-up">
-             <h3 className="font-bold text-gray-900 text-xl mb-6">Profile Settings</h3>
-             <form className="space-y-6 max-w-lg">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
-                      <input type="text" defaultValue={user.name} className="w-full rounded-xl border-white/60 border px-4 py-2.5 bg-white/50" readOnly />
+          <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-glass overflow-hidden border border-white/50 animate-fade-in-up" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
+             {/* Profile Header/Banner */}
+             <div className="h-32 bg-gradient-to-r from-brand-600 to-blue-800 relative">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+                <div className="absolute -bottom-12 left-8 flex items-end gap-5">
+                   <div className="relative z-10">
+                      <div className="w-24 h-24 bg-white rounded-full p-1.5 shadow-xl">
+                         <div className="w-full h-full bg-gradient-to-br from-brand-100 to-blue-50 rounded-full flex items-center justify-center text-brand-600 text-3xl font-extrabold border border-brand-100">
+                            {user.name.charAt(0).toUpperCase()}
+                         </div>
+                      </div>
+                      <button className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-gray-100 text-gray-600 hover:text-brand-600 transition-colors hover:scale-110">
+                         <Camera size={16} />
+                      </button>
                    </div>
-                   <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
-                      <input type="tel" defaultValue={user.phone || "Not set"} className="w-full rounded-xl border-white/60 border px-4 py-2.5 bg-white/50" readOnly />
+                   <div className="mb-3 hidden sm:block relative z-10">
+                      <h3 className="text-2xl font-extrabold text-white drop-shadow-md">{user.name}</h3>
+                      <p className="text-brand-100 text-sm font-medium drop-shadow-sm flex items-center gap-1">
+                        <CheckCircle size={14} className="text-green-400" /> Verified Customer
+                      </p>
                    </div>
                 </div>
-                <div>
-                   <label className="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
-                   <input type="email" defaultValue={user.email} className="w-full rounded-xl border-white/60 border px-4 py-2.5 bg-white/50" readOnly />
+             </div>
+             
+             <div className="p-8 pt-20">
+                <div className="sm:hidden mb-8">
+                   <h3 className="text-2xl font-extrabold text-gray-900">{user.name}</h3>
+                   <p className="text-brand-600 text-sm font-medium flex items-center gap-1 mt-1">
+                     <CheckCircle size={14} className="text-green-500" /> Verified Customer
+                   </p>
                 </div>
-                <div>
-                   <label className="block text-sm font-semibold text-gray-700 mb-1">Saved Address</label>
-                   <textarea rows={3} className="w-full rounded-xl border-white/60 border px-4 py-2.5 bg-white/50 focus:ring-brand-500 focus:border-brand-500" placeholder="Add a default address..."></textarea>
+
+                <div className="max-w-3xl mx-auto">
+                   <div className="space-y-8">
+                      {/* Personal Information */}
+                      <section>
+                         <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <User size={20} className="text-brand-500" /> Personal Information
+                         </h4>
+                         <form className="space-y-5 bg-white/40 p-6 rounded-2xl border border-white/60 shadow-sm">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                               <div>
+                                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Full Name</label>
+                                  <div className="relative">
+                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                        <User size={18} />
+                                     </div>
+                                     <input type="text" defaultValue={user.name} className="w-full rounded-xl border-gray-200 border pl-10 pr-4 py-2.5 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium text-gray-900 shadow-sm" />
+                                  </div>
+                               </div>
+                               <div>
+                                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Phone Number</label>
+                                  <div className="relative">
+                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                        <Phone size={18} />
+                                     </div>
+                                     <input type="tel" defaultValue={user.phone || ""} placeholder="Not set" className="w-full rounded-xl border-gray-200 border pl-10 pr-4 py-2.5 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium text-gray-900 shadow-sm" />
+                                  </div>
+                               </div>
+                            </div>
+                            <div>
+                               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Email Address</label>
+                               <div className="relative">
+                                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                     <Mail size={18} />
+                                  </div>
+                                  <input type="email" defaultValue={user.email} className="w-full rounded-xl border-gray-200 border pl-10 pr-4 py-2.5 bg-gray-50 text-gray-500 cursor-not-allowed font-medium shadow-sm" readOnly />
+                               </div>
+                               <p className="text-xs text-gray-500 mt-2 flex items-center gap-1.5"><ShieldCheck size={14} className="text-green-500"/> Email is verified and cannot be changed.</p>
+                            </div>
+                            <div>
+                               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Saved Address</label>
+                               <div className="relative">
+                                  <div className="absolute top-3 left-3 pointer-events-none text-gray-400">
+                                     <MapPin size={18} />
+                                  </div>
+                                  <textarea rows={3} className="w-full rounded-xl border-gray-200 border pl-10 pr-4 py-2.5 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium text-gray-900 shadow-sm" placeholder="Add your default service address..."></textarea>
+                               </div>
+                            </div>
+                            <div className="pt-4 border-t border-gray-100">
+                               <button type="button" className="bg-brand-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-brand-700 transition-all shadow-lg shadow-brand-500/20 hover:shadow-brand-500/40 active:scale-95 flex items-center gap-2">
+                                 Save Changes
+                               </button>
+                            </div>
+                         </form>
+                      </section>
+                   </div>
                 </div>
-                <button type="button" className="bg-brand-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/20">
-                  Update Profile
-                </button>
-             </form>
+             </div>
           </div>
         );
       default:
@@ -243,8 +311,8 @@ const Dashboard: React.FC = () => {
           <div className="lg:col-span-3 space-y-8">
             
             {/* Stats (Always visible) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in-down">
-               <div className="bg-white/60 backdrop-blur-md p-6 rounded-2xl shadow-glass border border-white/50 flex items-center justify-between">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <div className="bg-white/60 backdrop-blur-md p-6 rounded-2xl shadow-glass border border-white/50 flex items-center justify-between animate-fade-in-up" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
                   <div>
                     <div className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Total Bookings</div>
                     <div className="text-3xl font-extrabold text-gray-900">{userBookings.length}</div>
@@ -253,7 +321,7 @@ const Dashboard: React.FC = () => {
                     <Calendar size={28} />
                   </div>
                </div>
-               <div className="bg-white/60 backdrop-blur-md p-6 rounded-2xl shadow-glass border border-white/50 flex items-center justify-between">
+               <div className="bg-white/60 backdrop-blur-md p-6 rounded-2xl shadow-glass border border-white/50 flex items-center justify-between animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
                   <div>
                     <div className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Active AMC</div>
                     <div className="text-3xl font-extrabold text-brand-600">{activeAMC.length}</div>

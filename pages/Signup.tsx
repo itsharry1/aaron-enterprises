@@ -75,7 +75,7 @@ const Signup: React.FC = () => {
           </div>
           <h2 className="text-3xl font-extrabold text-gray-900">Create Account</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Join M/S Aaron Enterprises for seamless service booking
+            Join Aaron Enterprises for seamless service booking
           </p>
         </div>
 
@@ -88,7 +88,7 @@ const Signup: React.FC = () => {
           )}
 
           <div className="space-y-4">
-            <div className="relative">
+            <div className="relative animate-fade-in-up" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
               <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1 mb-1 block">Full Name</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -106,7 +106,7 @@ const Signup: React.FC = () => {
               </div>
             </div>
 
-            <div className="relative">
+            <div className="relative animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
               <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1 mb-1 block">Email Address</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -124,7 +124,7 @@ const Signup: React.FC = () => {
               </div>
             </div>
 
-            <div className="relative">
+            <div className="relative animate-fade-in-up" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
               <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1 mb-1 block">Phone Number</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -142,7 +142,7 @@ const Signup: React.FC = () => {
               </div>
             </div>
 
-            <div className="relative">
+            <div className="relative animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
               <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1 mb-1 block">Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -160,7 +160,7 @@ const Signup: React.FC = () => {
               </div>
             </div>
 
-            <div className="relative">
+            <div className="relative animate-fade-in-up" style={{ animationDelay: '0.5s', animationFillMode: 'both' }}>
               <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1 mb-1 block">Confirm Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -179,7 +179,7 @@ const Signup: React.FC = () => {
             </div>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-2 animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'both' }}>
             <button
               type="submit"
               disabled={isLoading}
@@ -193,7 +193,7 @@ const Signup: React.FC = () => {
             </button>
           </div>
           
-          <div className="text-center text-sm text-gray-600 mt-4">
+          <div className="text-center text-sm text-gray-600 mt-4 animate-fade-in-up" style={{ animationDelay: '0.7s', animationFillMode: 'both' }}>
              Already have an account?{' '}
              <Link to="/login" className="font-bold text-brand-600 hover:text-brand-500 hover:underline">
                Sign in here

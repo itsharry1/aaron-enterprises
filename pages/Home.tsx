@@ -40,36 +40,58 @@ const Home: React.FC = () => {
   return (
     <div className="overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=2069&auto=format&fit=crop" 
-            alt="AC Technician at work" 
-            className="w-full h-full object-cover animate-fade-in"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-blue-800/60 backdrop-blur-[2px]"></div>
-        </div>
-        
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto animate-fade-in-up">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight drop-shadow-lg">
-            Professional AC Services <br/> At Your Doorstep
-          </h1>
-          <p className="text-xl text-blue-50 mb-8 max-w-2xl mx-auto font-light drop-shadow-md">
-            Installation | Repair | AMC Plans | All AC Brands
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/book" className="bg-orange-500 hover:bg-orange-600 text-white text-lg font-bold px-8 py-4 rounded-full shadow-lg shadow-orange-500/30 transition-transform hover:scale-105 flex items-center justify-center gap-2 backdrop-blur-sm animate-bounce-slow">
-              <Zap size={20} /> Book Service Now
-            </Link>
-            <Link to="/amc" className="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white text-lg font-bold px-8 py-4 rounded-full border border-white/30 transition-all flex items-center justify-center gap-2 shadow-lg hover:scale-105">
-              <Shield size={20} /> View AMC Plans
-            </Link>
-          </div>
-          
-          <div className="mt-12 flex flex-wrap justify-center gap-6 text-white/90 text-sm font-medium animate-fade-in" style={{ animationDelay: '0.3s' }}>
-             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"><CheckCircle size={16} className="text-green-400"/> Verified Experts</div>
-             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"><CheckCircle size={16} className="text-green-400"/> 30-Day Warranty</div>
-             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"><CheckCircle size={16} className="text-green-400"/> Genuine Parts</div>
+      <section className="relative min-h-[600px] flex items-center justify-center py-20 pt-32">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Text Content (Left) */}
+            <div className="text-left animate-fade-in-up">
+              <h1 className="text-[2rem] uppercase font-extrabold text-[#6E1A37] mb-6 leading-tight">
+                Professional AC Services <br/> At Your Doorstep
+              </h1>
+              <p className="text-xl text-gray-600 mb-8 max-w-2xl font-light">
+                Installation | Repair | AMC Plans | All AC Brands
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-start">
+                <Link to="/book" className="bg-orange-500 hover:bg-orange-600 text-white text-lg font-bold px-8 py-4 rounded-full shadow-lg shadow-orange-500/30 transition-transform hover:scale-105 flex items-center justify-center gap-2">
+                  <Zap size={20} /> Book Service Now
+                </Link>
+                <Link to="/amc" className="bg-white hover:bg-gray-50 text-brand-600 text-lg font-bold px-8 py-4 rounded-full border border-brand-200 transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:scale-105">
+                  <Shield size={20} /> View AMC Plans
+                </Link>
+              </div>
+              
+              <div className="mt-12 flex flex-wrap justify-start gap-4 text-gray-700 text-sm font-medium animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
+                 <div className="flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-gray-200 shadow-sm"><CheckCircle size={16} className="text-green-500"/> Verified Experts</div>
+                 <div className="flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-gray-200 shadow-sm"><CheckCircle size={16} className="text-green-500"/> 30-Day Warranty</div>
+                 <div className="flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-gray-200 shadow-sm"><CheckCircle size={16} className="text-green-500"/> Genuine Parts</div>
+              </div>
+            </div>
+
+            {/* Image Content (Right) */}
+            <div className="relative animate-fade-in flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-lg xl:max-w-xl">
+                {/* Decorative background blob */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-brand-200/50 rounded-[2rem] rotate-3 scale-105 -z-10"></div>
+                
+                {/* Main Image */}
+                <img 
+                  src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=2069&auto=format&fit=crop" 
+                  alt="AC Technician cleaning air conditioner" 
+                  className="relative z-10 w-full h-auto object-cover rounded-[2rem] shadow-2xl border-4 border-white"
+                />
+                
+                {/* Floating Badge */}
+                <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl border border-gray-100 z-20 animate-bounce-slow flex items-center gap-3">
+                  <div className="bg-green-100 p-2 rounded-full text-green-600">
+                    <CheckCircle size={24} />
+                  </div>
+                  <div>
+                    <div className="font-bold text-gray-900">Top Rated</div>
+                    <div className="text-xs text-gray-500">Service Professionals</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -83,7 +105,7 @@ const Home: React.FC = () => {
               <div 
                 key={index} 
                 className="bg-white/60 backdrop-blur-md p-8 rounded-3xl shadow-glass border border-white/60 hover:shadow-glass-hover hover:bg-white/80 transition-all duration-300 group animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'both' }}
               >
                 <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 text-brand-600 shadow-sm border border-brand-50 group-hover:scale-110 transition-transform">
                    <feature.icon size={28} strokeWidth={1.5} />
@@ -97,7 +119,7 @@ const Home: React.FC = () => {
             ))}
           </div>
 
-          <div className="text-center mt-16 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <div className="text-center mt-16 animate-fade-in" style={{ animationDelay: '0.6s', animationFillMode: 'both' }}>
             <Link to="/services" className="bg-white hover:bg-brand-50 text-brand-700 font-bold py-4 px-8 rounded-full inline-flex items-center gap-2 transition-transform hover:scale-105 shadow-glass border border-white/50">
               View All Services <ArrowRight size={20} />
             </Link>
@@ -111,7 +133,7 @@ const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="animate-slide-in-left">
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">Why Choose M/S Aaron Enterprises?</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-6">Why Choose Aaron Enterprises?</h2>
                 <div className="space-y-6">
                    <div className="flex gap-4 bg-white/50 backdrop-blur-sm p-4 rounded-2xl border border-white/60 shadow-sm hover:scale-105 transition-transform duration-300">
                       <div className="bg-blue-100 p-3 rounded-xl h-fit text-brand-600"><Clock size={28} /></div>
@@ -172,7 +194,7 @@ const Home: React.FC = () => {
                         ? 'bg-gray-900/95 text-white shadow-2xl md:-mt-8 md:-mb-4 z-10 border-gray-700 backdrop-blur-md' 
                         : 'bg-white/60 text-gray-900 shadow-glass border-white/60 backdrop-blur-md hover:bg-white/80'
                     }`}
-                    style={{ animationDelay: `${index * 0.2}s` }}
+                    style={{ animationDelay: `${index * 0.2}s`, animationFillMode: 'both' }}
                   >
                      {isPremium && (
                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-lg shadow-orange-500/40 flex items-center gap-1">
@@ -231,7 +253,7 @@ const Home: React.FC = () => {
                 <div 
                   key={review.id} 
                   className="bg-white/60 backdrop-blur-md p-8 rounded-3xl shadow-glass border border-white/50 hover:-translate-y-1 transition-transform duration-300 animate-zoom-in"
-                  style={{ animationDelay: `${i * 0.15}s` }}
+                  style={{ animationDelay: `${i * 0.15}s`, animationFillMode: 'both' }}
                 >
                    <div className="flex gap-1 text-yellow-400 mb-6 bg-yellow-50/50 w-fit px-3 py-1 rounded-full border border-yellow-100">
                       {[...Array(5)].map((_, i) => (
@@ -240,9 +262,11 @@ const Home: React.FC = () => {
                    </div>
                    <p className="text-gray-700 italic mb-6 leading-relaxed">"{review.comment}"</p>
                    <div className="flex items-center gap-4 pt-4 border-t border-gray-100/50">
-                      <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center font-bold text-gray-500 shadow-inner">
-                        {review.name.charAt(0)}
-                      </div>
+                      <img 
+                        src={`https://i.pravatar.cc/150?u=${review.name.replace(/\s+/g, '')}`} 
+                        alt={review.name} 
+                        className="w-12 h-12 rounded-full object-cover shadow-sm border-2 border-white"
+                      />
                       <div>
                          <div className="font-bold text-gray-900">{review.name}</div>
                          <div className="text-xs text-gray-500">{review.date}</div>
@@ -255,20 +279,33 @@ const Home: React.FC = () => {
       </section>
 
       {/* Brands & Cities */}
-      <section className="py-16 bg-white/40 backdrop-blur-md border-t border-white/40">
+      <section className="py-16 bg-white/40 backdrop-blur-md border-t border-white/40 overflow-hidden">
          <div className="max-w-7xl mx-auto px-4 text-center">
             <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mb-10 animate-fade-in">Trusted Brands We Service</p>
-            <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 text-gray-400 font-bold text-xl md:text-2xl opacity-60">
-               {BRANDS.map((brand, i) => (
-                 <span key={brand} className="hover:text-brand-500 transition-colors cursor-default hover:opacity-100 animate-fade-in" style={{ animationDelay: `${i * 0.05}s` }}>{brand}</span>
-               ))}
+            
+            {/* Marquee Container */}
+            <div className="flex overflow-hidden group">
+               <div className="animate-marquee flex whitespace-nowrap items-center gap-16 py-4 shrink-0 pr-16">
+                  {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, i) => (
+                    <span key={`${brand}-${i}`} className="text-gray-400 font-bold text-2xl md:text-3xl opacity-60 hover:text-brand-500 transition-colors cursor-default hover:opacity-100">
+                      {brand}
+                    </span>
+                  ))}
+               </div>
+               <div className="animate-marquee flex whitespace-nowrap items-center gap-16 py-4 shrink-0 pr-16" aria-hidden="true">
+                  {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, i) => (
+                    <span key={`dup-${brand}-${i}`} className="text-gray-400 font-bold text-2xl md:text-3xl opacity-60 hover:text-brand-500 transition-colors cursor-default hover:opacity-100">
+                      {brand}
+                    </span>
+                  ))}
+               </div>
             </div>
             
             <div className="mt-16 pt-12 border-t border-gray-200/50">
                <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mb-8 animate-fade-in">Service Areas</p>
                <div className="flex flex-wrap justify-center gap-4">
                   {CITIES.map((city, i) => (
-                    <span key={city} className="bg-white/80 border border-white/60 text-gray-600 px-6 py-2 rounded-full text-sm font-medium shadow-sm animate-zoom-in" style={{ animationDelay: `${i * 0.1}s` }}>
+                    <span key={city} className="bg-white/80 border border-white/60 text-gray-600 px-6 py-2 rounded-full text-sm font-medium shadow-sm animate-zoom-in" style={{ animationDelay: `${i * 0.1}s`, animationFillMode: 'both' }}>
                       {city}
                     </span>
                   ))}

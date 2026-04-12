@@ -17,7 +17,7 @@ const Contact: React.FC = () => {
     e.preventDefault();
     
     // Construct the email subject
-    const subject = `New Inquiry from ${formData.name} - M/S Aaron Enterprises`;
+    const subject = `New Inquiry from ${formData.name} - Aaron Enterprises`;
     
     // Construct the email body with clear formatting
     const body = `Name: ${formData.name}
@@ -39,7 +39,7 @@ ${formData.message}`;
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 animate-fade-in-down">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-4 drop-shadow-sm">Get In Touch</h1>
-          <p className="text-lg text-gray-600">We are here to help you. Reach out to M/S Aaron Enterprises for any queries or support.</p>
+          <p className="text-lg text-gray-600">We are here to help you. Reach out to Aaron Enterprises for any queries or support.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -48,7 +48,7 @@ ${formData.message}`;
             <div className="bg-white/60 backdrop-blur-md p-8 rounded-3xl shadow-glass border border-white/50 hover:shadow-glass-hover transition-shadow duration-300">
                <h3 className="text-xl font-bold text-gray-900 mb-8">Contact Information</h3>
                <div className="space-y-8">
-                  <div className="flex items-start gap-5 group">
+                  <div className="flex items-start gap-5 group animate-fade-in-up" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
                      <div className="bg-brand-100/80 p-3.5 rounded-2xl text-brand-600 shadow-sm border border-brand-200 group-hover:scale-110 transition-transform"><Phone size={24} /></div>
                      <div>
                         <p className="font-bold text-gray-900 text-lg">Phone Support</p>
@@ -56,7 +56,7 @@ ${formData.message}`;
                         <p className="text-gray-500 text-sm mt-1">Mon-Sat 9am to 7pm</p>
                      </div>
                   </div>
-                  <div className="flex items-start gap-5 group">
+                  <div className="flex items-start gap-5 group animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
                      <div className="bg-green-100/80 p-3.5 rounded-2xl text-green-600 shadow-sm border border-green-200 group-hover:scale-110 transition-transform"><MessageCircle size={24} /></div>
                      <div>
                         <p className="font-bold text-gray-900 text-lg">WhatsApp</p>
@@ -64,14 +64,14 @@ ${formData.message}`;
                         <p className="text-gray-500 text-sm mt-1">24/7 Chat Support</p>
                      </div>
                   </div>
-                  <div className="flex items-start gap-5 group">
+                  <div className="flex items-start gap-5 group animate-fade-in-up" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
                      <div className="bg-orange-100/80 p-3.5 rounded-2xl text-orange-600 shadow-sm border border-orange-200 group-hover:scale-110 transition-transform"><Mail size={24} /></div>
                      <div>
                         <p className="font-bold text-gray-900 text-lg">Email</p>
                         <p className="text-gray-600 font-medium break-all">aaronenterprisesae@gmail.com</p>
                      </div>
                   </div>
-                  <div className="flex items-start gap-5 group">
+                  <div className="flex items-start gap-5 group animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
                      <div className="bg-blue-100/80 p-3.5 rounded-2xl text-blue-600 shadow-sm border border-blue-200 group-hover:scale-110 transition-transform"><MapPin size={24} /></div>
                      <div>
                         <p className="font-bold text-gray-900 text-lg">Head Office</p>
@@ -81,7 +81,7 @@ ${formData.message}`;
                </div>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-8 rounded-3xl shadow-2xl border border-gray-700 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-8 rounded-3xl shadow-2xl border border-gray-700 animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
                <h3 className="text-xl font-bold mb-6 flex items-center gap-2"><Clock /> Business Hours</h3>
                <ul className="space-y-4 text-blue-100">
                   <li className="flex justify-between border-b border-gray-700 pb-3">

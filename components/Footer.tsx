@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <ShieldCheck className="text-brand-400" size={32} />
-              <span className="text-xl font-bold">M/S Aaron Enterprises</span>
+              <span className="text-xl font-bold">Aaron Enterprises</span>
             </div>
             <p className="text-gray-400 mb-6 leading-relaxed">
               Trusted AC service provider. Professional technicians, affordable pricing, and genuine spare parts.
@@ -72,7 +72,7 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} M/S Aaron Enterprises. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Aaron Enterprises. All rights reserved.</p>
         </div>
       </div>
       

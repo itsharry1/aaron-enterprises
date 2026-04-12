@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, User, LogOut, ShieldCheck } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { UserRole } from '../types';
+import logoImage from '../context/Gemini_Generated_Image_62js6z62js6z62js.png';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,13 +21,12 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center gap-2" onClick={closeMenu}>
-              <div className="bg-brand-600 text-white p-2 rounded-xl shadow-lg shadow-brand-200">
-                <ShieldCheck size={28} />
-              </div>
-              <div>
-                <span className="font-bold text-lg md:text-xl text-brand-900 block leading-tight">M/S Aaron Enterprises</span>
-                <span className="text-xs text-gray-500 font-medium tracking-wider">AC SERVICES & AMC</span>
-              </div>
+              <img 
+                src={logoImage} 
+                alt="Aaron Enterprises Logo" 
+                className="h-12 md:h-14 object-contain"
+                referrerPolicy="no-referrer"
+              />
             </Link>
           </div>
 

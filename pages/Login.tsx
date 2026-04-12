@@ -70,7 +70,7 @@ const Login: React.FC = () => {
           )}
 
           <div className="space-y-4">
-            <div className="relative">
+            <div className="relative animate-fade-in-up" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
               <label htmlFor="email-address" className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1 mb-1 block">Email Address</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -90,7 +90,7 @@ const Login: React.FC = () => {
               </div>
             </div>
             
-            <div className="relative">
+            <div className="relative animate-fade-in-up" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
               <label htmlFor="password" className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1 mb-1 block">Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -111,7 +111,7 @@ const Login: React.FC = () => {
             </div>
           </div>
           
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between animate-fade-in-up" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
             <div className="flex items-center">
                <input type="checkbox" className="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded" />
                <label className="ml-2 block text-sm text-gray-900 font-medium">Remember me</label>
@@ -121,7 +121,7 @@ const Login: React.FC = () => {
             </div>
           </div>
 
-          <div>
+          <div className="animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
             <button
               type="submit"
               disabled={isLoading}
@@ -131,7 +131,7 @@ const Login: React.FC = () => {
             </button>
           </div>
 
-          <div className="text-center text-sm text-gray-600 mt-4">
+          <div className="text-center text-sm text-gray-600 mt-4 animate-fade-in-up" style={{ animationDelay: '0.5s', animationFillMode: 'both' }}>
              Don't have an account?{' '}
              <Link to="/signup" className="font-bold text-brand-600 hover:text-brand-500 hover:underline">
                Create one here

@@ -76,7 +76,9 @@ const ShopAC: React.FC = () => {
           </p>
           <div className="flex gap-4 justify-center">
              <button onClick={() => navigate('/')} className="px-6 py-3 border border-gray-300 rounded-xl font-bold hover:bg-gray-50 transition-colors">Home</button>
-             <button onClick={() => navigate('/dashboard')} className="px-6 py-3 bg-brand-600 text-white rounded-xl font-bold hover:bg-brand-700 shadow-lg transition-transform hover:scale-105">View Status</button>
+             {user && (
+               <button onClick={() => navigate('/dashboard')} className="px-6 py-3 bg-brand-600 text-white rounded-xl font-bold hover:bg-brand-700 shadow-lg transition-transform hover:scale-105">View Status</button>
+             )}
           </div>
         </div>
       </div>

@@ -27,7 +27,7 @@ const AMCPlans: React.FC = () => {
                     ? 'bg-gray-900/95 text-white shadow-2xl md:-mt-8 md:-mb-4 z-10 border-gray-700 backdrop-blur-xl' 
                     : 'bg-white/60 text-gray-900 shadow-glass border-white/60 backdrop-blur-md hover:bg-white/80'
                 }`}
-                style={{ animationDelay: `${i * 0.15}s` }}
+                style={{ animationDelay: `${i * 0.15}s`, animationFillMode: 'both' }}
               >
                  {isPremium && (
                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-6 py-1.5 rounded-full text-sm font-bold shadow-lg shadow-orange-500/40 flex items-center gap-1">
@@ -75,7 +75,7 @@ const AMCPlans: React.FC = () => {
           })}
         </div>
 
-        <div className="mt-20 bg-white/50 backdrop-blur-md rounded-[2rem] p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 border border-white/60 shadow-glass max-w-5xl mx-auto animate-zoom-in" style={{ animationDelay: '0.4s' }}>
+        <div className="mt-20 bg-white/50 backdrop-blur-md rounded-[2rem] p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 border border-white/60 shadow-glass max-w-5xl mx-auto animate-zoom-in" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
           <div className="bg-white p-6 rounded-full shadow-lg text-brand-600 border border-brand-100">
             <ShieldCheck size={48} />
           </div>

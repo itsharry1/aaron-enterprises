@@ -54,22 +54,25 @@ const Admin: React.FC = () => {
     icon: Icon, 
     colorClass, 
     bgClass, 
-    filterType 
+    filterType,
+    delay
   }: { 
     title: string, 
     count: number, 
     icon: any, 
     colorClass: string, 
     bgClass: string,
-    filterType: BookingStatus | 'ALL'
+    filterType: BookingStatus | 'ALL',
+    delay: string
   }) => (
     <div 
       onClick={() => setStatusFilter(filterType)}
-      className={`relative overflow-hidden p-6 rounded-2xl border transition-all cursor-pointer hover:-translate-y-1 group ${
+      className={`relative overflow-hidden p-6 rounded-2xl border transition-all cursor-pointer hover:-translate-y-1 group animate-fade-in-up ${
         statusFilter === filterType 
           ? `ring-2 ring-offset-2 ${colorClass.replace('text-', 'ring-')}` 
           : 'border-white/50 hover:border-white/80'
       } bg-white/70 backdrop-blur-md shadow-glass`}
+      style={{ animationDelay: delay, animationFillMode: 'both' }}
     >
        <div className={`absolute top-0 right-0 p-4 opacity-10 transform translate-x-2 -translate-y-2 group-hover:scale-110 transition-transform ${colorClass}`}>
           <Icon size={64} />
@@ -176,7 +179,7 @@ const Admin: React.FC = () => {
         )}
 
         {/* Stats Row */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
            <StatCard 
              title="Total Bookings" 
              count={bookings.length} 
@@ -184,6 +187,7 @@ const Admin: React.FC = () => {
              colorClass="text-brand-600" 
              bgClass="bg-brand-50"
              filterType="ALL"
+             delay="0.1s"
            />
            <StatCard 
              title="Pending" 
@@ -192,6 +196,7 @@ const Admin: React.FC = () => {
              colorClass="text-orange-600" 
              bgClass="bg-orange-50"
              filterType={BookingStatus.PENDING}
+             delay="0.2s"
            />
            <StatCard 
              title="Confirmed" 
@@ -200,6 +205,7 @@ const Admin: React.FC = () => {
              colorClass="text-blue-600" 
              bgClass="bg-blue-50"
              filterType={BookingStatus.CONFIRMED}
+             delay="0.3s"
            />
            <StatCard 
              title="Completed" 
@@ -208,6 +214,7 @@ const Admin: React.FC = () => {
              colorClass="text-green-600" 
              bgClass="bg-green-50"
              filterType={BookingStatus.COMPLETED}
+             delay="0.4s"
            />
            <StatCard 
              title="Cancelled" 
@@ -216,11 +223,12 @@ const Admin: React.FC = () => {
              colorClass="text-red-600" 
              bgClass="bg-red-50"
              filterType={BookingStatus.CANCELLED}
+             delay="0.5s"
            />
         </div>
 
         {/* Filters and Search Bar Mock */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>
            <h2 className="font-bold text-gray-900 text-xl pl-2 border-l-4 border-brand-500">
              {statusFilter === 'ALL' ? 'All Booking History' : `${statusFilter} Bookings`}
            </h2>
@@ -240,7 +248,7 @@ const Admin: React.FC = () => {
         </div>
 
         {/* Bookings Table */}
-        <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-glass border border-white/50 overflow-hidden animate-zoom-in" style={{ animationDelay: '0.4s' }}>
+        <div className="bg-white/60 backdrop-blur-md rounded-2xl shadow-glass border border-white/50 overflow-hidden animate-zoom-in" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-white/60">
               <thead className="bg-white/40">

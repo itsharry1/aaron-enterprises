@@ -68,7 +68,7 @@ const Services: React.FC = () => {
               <div 
                 key={service.id}
                 className="bg-white/60 backdrop-blur-md rounded-3xl shadow-glass border border-white/50 overflow-hidden hover:shadow-glass-hover hover:bg-white/80 transition-all duration-300 flex flex-col group animate-fade-in-up"
-                style={{ animationDelay: `${i * 0.1}s` }}
+                style={{ animationDelay: `${i * 0.1}s`, animationFillMode: 'both' }}
               >
                 {/* Header */}
                 <div className="p-8 border-b border-gray-100/50 bg-white/30">
@@ -120,7 +120,7 @@ const Services: React.FC = () => {
           })}
         </div>
         
-        <div className="mt-16 bg-blue-50/50 backdrop-blur-sm border border-blue-100 rounded-2xl p-6 text-center text-sm text-blue-800 shadow-sm max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.5s' }}>
+        <div className="mt-16 bg-blue-50/50 backdrop-blur-sm border border-blue-100 rounded-2xl p-6 text-center text-sm text-blue-800 shadow-sm max-w-3xl mx-auto animate-fade-in" style={{ animationDelay: '0.5s', animationFillMode: 'both' }}>
            <p className="font-medium">Note: Service charges are determined after inspection and based on the scope of work.</p>
         </div>
 

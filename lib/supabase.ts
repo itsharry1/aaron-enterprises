@@ -1,6 +1,27 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://dxkhbyojakiklbzbpgph.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4a2hieW9qYWtpa2xiemJwZ3BoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MjIzMjgsImV4cCI6MjA4MzE5ODMyOH0.iDPGgqidotnbzj5iT2rdASakSZVRATc2wxoCMrREL2w';
+// Safe access to environment variables
+const getEnv = (key: string) => {
+  try {
+    // Check if import.meta.env exists
+    if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
+      return (import.meta as any).env[key];
+    }
+  } catch (e) {
+    console.warn(`Failed to access env var ${key}`, e);
+  }
+  return undefined;
+};
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseUrl = getEnv('VITE_SUPABASE_URL');
+const supabaseKey = getEnv('VITE_SUPABASE_ANON_KEY');
+
+if (!supabaseUrl || !supabaseKey) {
+  console.warn('Supabase credentials missing! Requests will fail until .env is configured.');
+}
+
+// Robust fallback to prevent module crash
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co', 
+  supabaseKey || 'placeholder-key'
+);
