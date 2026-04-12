@@ -17,7 +17,7 @@ const Contact: React.FC = () => {
     e.preventDefault();
     
     // Construct the email subject
-    const subject = `New Inquiry from ${formData.name} - Aaron Enterprises`;
+    const subject = `New Inquiry from ${formData.name} - Aaroon Enterprises`;
     
     // Construct the email body with clear formatting
     const body = `Name: ${formData.name}
@@ -28,7 +28,7 @@ Message:
 ${formData.message}`;
 
     // Create the mailto link with encoded parameters
-    const mailtoLink = `mailto:aaronenterprisesae@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailtoLink = `mailto:aaroonenterprisesae@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
     // Open user's email client
     window.location.href = mailtoLink;
@@ -39,7 +39,7 @@ ${formData.message}`;
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 animate-fade-in-down">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-4 drop-shadow-sm">Get In Touch</h1>
-          <p className="text-lg text-gray-600">We are here to help you. Reach out to Aaron Enterprises for any queries or support.</p>
+          <p className="text-lg text-gray-600">We are here to help you. Reach out to Aaroon Enterprises for any queries or support.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -68,7 +68,7 @@ ${formData.message}`;
                      <div className="bg-orange-100/80 p-3.5 rounded-2xl text-orange-600 shadow-sm border border-orange-200 group-hover:scale-110 transition-transform"><Mail size={24} /></div>
                      <div>
                         <p className="font-bold text-gray-900 text-lg">Email</p>
-                        <p className="text-gray-600 font-medium break-all">aaronenterprisesae@gmail.com</p>
+                        <p className="text-gray-600 font-medium break-all">aaroonenterprisesae@gmail.com</p>
                      </div>
                   </div>
                   <div className="flex items-start gap-5 group animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>

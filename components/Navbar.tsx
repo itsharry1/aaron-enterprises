@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, User, LogOut, ShieldCheck } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { UserRole } from '../types';
-import logoImage from '../context/Gemini_Generated_Image_62js6z62js6z62js.png';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,13 +17,13 @@ const Navbar: React.FC = () => {
   return (
     <nav className="sticky top-0 z-50 bg-white/70 backdrop-blur-lg border-b border-white/40 shadow-sm transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20">
+        <div className="flex justify-between h-24">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center gap-2" onClick={closeMenu}>
               <img 
-                src={logoImage} 
-                alt="Aaron Enterprises Logo" 
-                className="h-12 md:h-14 object-contain"
+                src="/Aaroon-Enterprises-Logo.png" 
+                alt="Aaroon Enterprises Logo" 
+                className="h-16 md:h-20 object-contain"
                 referrerPolicy="no-referrer"
               />
             </Link>

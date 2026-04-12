@@ -38,8 +38,8 @@ const ForgotPassword: React.FC = () => {
         <div className="absolute -top-20 -left-20 w-40 h-40 bg-brand-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
 
         <div className="text-center relative z-10">
-          <div className="mx-auto h-16 w-16 bg-brand-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-brand-500/30 mb-6">
-             <ShieldCheck size={32} />
+          <div className="mx-auto h-20 w-20 flex items-center justify-center mb-6">
+             <img src="/Aaroon-Enterprises-Logo.png" alt="Aaroon Enterprises Logo" className="h-full object-contain" />
           </div>
           <h2 className="text-3xl font-extrabold text-gray-900">Forgot Password</h2>
           <p className="mt-2 text-sm text-gray-600">

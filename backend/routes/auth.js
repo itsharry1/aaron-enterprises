@@ -25,7 +25,7 @@ router.post('/register', async (req, res) => {
     }
 
     // Simple logic to make specific email admin for demo
-    const role = email.includes('admin') || email.includes('aaronenterprises.in') ? 'ADMIN' : 'CUSTOMER';
+    const role = email.includes('admin') || email.includes('aaroonenterprises.in') ? 'ADMIN' : 'CUSTOMER';
 
     const user = await User.create({
       name,

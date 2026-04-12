@@ -55,11 +55,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     // Default Admin for easy access if not registered
-    if (email === 'admin@aaron.com' && password === 'admin') {
+    if (email === 'admin@aaroon.com' && password === 'admin') {
       const adminUser: User = { 
         id: 'admin-default', 
         name: 'Admin', 
-        email: 'admin@aaron.com', 
+        email: 'admin@aaroon.com', 
         role: UserRole.ADMIN,
         phone: '9999999999'
       };
@@ -81,7 +81,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     // Determine role based on email keyword for demo purposes
-    const role = userData.email.includes('admin') || userData.email.includes('aaron') ? UserRole.ADMIN : UserRole.CUSTOMER;
+    const role = userData.email.includes('admin') || userData.email.includes('aaroon') ? UserRole.ADMIN : UserRole.CUSTOMER;
 
     const newUser = {
       ...userData,

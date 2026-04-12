@@ -11,8 +11,8 @@ const Footer: React.FC = () => {
           {/* Company Info */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <ShieldCheck className="text-brand-400" size={32} />
-              <span className="text-xl font-bold">Aaron Enterprises</span>
+              <img src="/Aaroon-Enterprises-Logo.png" alt="Aaroon Enterprises Logo" className="h-12 object-contain bg-white rounded p-1" />
+              <span className="text-xl font-bold">Aaroon Enterprises</span>
             </div>
             <p className="text-gray-400 mb-6 leading-relaxed">
               Trusted AC service provider. Professional technicians, affordable pricing, and genuine spare parts.
@@ -65,14 +65,14 @@ const Footer: React.FC = () => {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="text-brand-400 flex-shrink-0" size={18} />
-                <a href="mailto:aaronenterprisesae@gmail.com" className="hover:text-white break-all">aaronenterprisesae@gmail.com</a>
+                <a href="mailto:aaroonenterprisesae@gmail.com" className="hover:text-white break-all">aaroonenterprisesae@gmail.com</a>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} Aaron Enterprises. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Aaroon Enterprises. All rights reserved.</p>
         </div>
       </div>
       
