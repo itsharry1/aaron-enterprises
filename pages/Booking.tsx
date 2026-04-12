@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { SERVICES, AMC_PLANS } from '../constants';
 import { Calendar, Clock, MapPin, User, Phone, CheckCircle, FileCheck, Loader2, AlertCircle } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const Booking: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -132,6 +133,7 @@ const Booking: React.FC = () => {
 
   return (
     <div className="min-h-screen py-12">
+      <SEO title="Book Service" description="Book your AC repair, installation, or AMC service online with Aaroon Enterprises." />
       <div className="max-w-3xl mx-auto px-4">
         
         {/* Progress Steps */}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { ShieldCheck, Loader2, AlertCircle, Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -33,6 +34,7 @@ const ForgotPassword: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-brand-50 via-white to-blue-50">
+      <SEO title="Forgot Password" description="Reset your Aaroon Enterprises account password." />
       <div className="max-w-md w-full space-y-8 bg-white/60 backdrop-blur-xl p-10 rounded-[2rem] shadow-glass border border-white/50 relative overflow-hidden animate-zoom-in">
         
         <div className="absolute -top-20 -left-20 w-40 h-40 bg-brand-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>

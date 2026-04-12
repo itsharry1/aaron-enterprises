@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { Navigate } from 'react-router-dom';
 import { UserRole, BookingStatus } from '../types';
 import { Check, X, Clock, Filter, Search, RefreshCw, AlertCircle, Calendar, MapPin, FileText, CheckCircle, XCircle } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const Admin: React.FC = () => {
   const { user, bookings, updateBookingStatus, refreshData } = useApp();
@@ -91,6 +92,7 @@ const Admin: React.FC = () => {
 
   return (
     <div className="min-h-screen p-4 md:p-8 relative">
+      <SEO title="Admin Dashboard" description="Manage bookings, services, and users." />
       
       {/* Toast Notification */}
       {notification && (

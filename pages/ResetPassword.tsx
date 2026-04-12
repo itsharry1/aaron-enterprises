@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { ShieldCheck, Loader2, AlertCircle, Lock, CheckCircle } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const ResetPassword: React.FC = () => {
   const [password, setPassword] = useState('');
@@ -50,6 +51,7 @@ const ResetPassword: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-brand-50 via-white to-blue-50">
+      <SEO title="Reset Password" description="Reset your Aaroon Enterprises account password." />
       <div className="max-w-md w-full space-y-8 bg-white/60 backdrop-blur-xl p-10 rounded-[2rem] shadow-glass border border-white/50 relative overflow-hidden animate-zoom-in">
         
         <div className="text-center relative z-10">

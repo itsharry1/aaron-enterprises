@@ -19,18 +19,21 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-24">
           <div className="flex items-center">
-            <Link to="/" className="flex-shrink-0 flex items-center gap-2" onClick={closeMenu}>
+            <Link to="/" className="flex-shrink-0 flex items-center gap-3" onClick={closeMenu}>
               <img 
                 src="/Aaroon-Enterprises-Logo.png" 
                 alt="Aaroon Enterprises Logo" 
-                className="h-16 md:h-20 object-contain"
+                className="h-12 md:h-14 lg:h-20 object-contain drop-shadow-sm"
                 referrerPolicy="no-referrer"
               />
+              <span className="text-xl md:text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-brand-700 via-brand-600 to-blue-800 tracking-tight hidden sm:block drop-shadow-sm whitespace-nowrap">
+                Aaroon Enterprises
+              </span>
             </Link>
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden lg:flex items-center space-x-6">
             <Link to="/" className={isActive('/')}>Home</Link>
             <Link to="/services" className={isActive('/services')}>Services</Link>
             <Link to="/amc" className={isActive('/amc')}>AMC Plans</Link>
@@ -63,7 +66,7 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex items-center md:hidden">
+          <div className="flex items-center lg:hidden">
             <a href="tel:8077419349" className="mr-4 text-brand-600 bg-brand-50 p-2 rounded-full">
               <Phone size={20} />
             </a>
@@ -79,7 +82,7 @@ const Navbar: React.FC = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white/90 backdrop-blur-xl border-t border-gray-100 absolute w-full shadow-lg rounded-b-2xl">
+        <div className="lg:hidden bg-white/90 backdrop-blur-xl border-t border-gray-100 absolute w-full shadow-lg rounded-b-2xl">
           <div className="px-4 pt-4 pb-6 space-y-2">
             <Link to="/" className="block px-4 py-3 rounded-xl text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition-colors" onClick={closeMenu}>Home</Link>
             <Link to="/services" className="block px-4 py-3 rounded-xl text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition-colors" onClick={closeMenu}>Services</Link>

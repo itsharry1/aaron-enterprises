@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Sparkles, Gauge, Wrench, Activity, Wind, Info, ChevronRight, Check, ShoppingBag } from 'lucide-react';
 import { SERVICES } from '../constants';
+import SEO from '../components/SEO';
 
 const Services: React.FC = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const Services: React.FC = () => {
 
   return (
     <div className="min-h-screen py-16">
+      <SEO title="Our Services" description="Professional AC repair, installation, and maintenance services by Aaroon Enterprises." />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="text-center mb-16 animate-fade-in-down">

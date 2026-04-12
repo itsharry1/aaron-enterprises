@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Star, Shield, Clock, Wrench, Zap, CheckCircle, ArrowRight, Wind, Gauge, Calendar, Sparkles, Headphones } from 'lucide-react';
 import { SERVICES, TESTIMONIALS, BRANDS, CITIES, AMC_PLANS } from '../constants';
 import whyChooseImage from '../Gemini_Generated_Image_mfvcawmfvcawmfvc.png';
+import SEO from '../components/SEO';
 
 const Home: React.FC = () => {
   const features = [
@@ -40,6 +41,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="overflow-x-hidden">
+      <SEO title="Home" description="Professional AC repair, installation, and AMC services. Book trusted technicians online with Aaroon Enterprises." />
       {/* Hero Section */}
       <section className="relative min-h-[600px] flex items-center justify-center py-20 pt-32">
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">

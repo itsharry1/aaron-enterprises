@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { UserRole } from '../types';
 import { ShieldCheck, User, Mail, Phone, Lock, AlertCircle, Loader2 } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
@@ -63,6 +64,7 @@ const Signup: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-brand-50 via-white to-blue-50">
+      <SEO title="Sign Up" description="Create an account with Aaroon Enterprises to book AC services easily." />
       <div className="max-w-md w-full space-y-8 bg-white/60 backdrop-blur-xl p-10 rounded-[2rem] shadow-glass border border-white/50 relative overflow-hidden animate-zoom-in">
         
         {/* Decorative elements */}

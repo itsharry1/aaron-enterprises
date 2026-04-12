@@ -3,6 +3,7 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { UserRole } from '../types';
 import { ShieldCheck, Loader2, AlertCircle, Mail, Lock } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -45,6 +46,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-brand-50 via-white to-blue-50">
+      <SEO title="Login" description="Login to your Aaroon Enterprises account." />
       <div className="max-w-md w-full space-y-8 bg-white/60 backdrop-blur-xl p-10 rounded-[2rem] shadow-glass border border-white/50 relative overflow-hidden animate-zoom-in">
         
         {/* Decorative elements */}

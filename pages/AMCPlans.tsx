@@ -2,10 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle, ShieldCheck, Zap, Headphones, Shield, ArrowRight } from 'lucide-react';
 import { AMC_PLANS } from '../constants';
+import SEO from '../components/SEO';
 
 const AMCPlans: React.FC = () => {
   return (
     <div className="min-h-screen py-16">
+      <SEO title="AMC Plans" description="Explore our Annual Maintenance Contract (AMC) plans for your AC. Get priority support, free services, and more." />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 animate-fade-in-down">
           <span className="text-brand-600 font-bold tracking-widest uppercase text-xs bg-brand-50 px-4 py-2 rounded-full border border-brand-100">Annual Maintenance Contract</span>

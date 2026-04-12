@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Phone, Mail, MapPin, Clock, MessageCircle, Send } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -36,6 +37,7 @@ ${formData.message}`;
 
   return (
     <div className="min-h-screen py-12">
+      <SEO title="Contact Us" description="Get in touch with Aaroon Enterprises for AC repair, installation, and maintenance inquiries." />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 animate-fade-in-down">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-4 drop-shadow-sm">Get In Touch</h1>

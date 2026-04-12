@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { Navigate } from 'react-router-dom';
 import { Calendar, User, Package, LogOut, CheckCircle, Clock, Menu, ShoppingBag, Mail, Phone, MapPin, ShieldCheck, Camera } from 'lucide-react';
+import SEO from '../components/SEO';
 
 type DashboardView = 'bookings' | 'amc' | 'profile';
 
@@ -238,6 +239,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen py-6 md:py-12">
+      <SEO title="My Dashboard" description="View your bookings, AMC plans, and profile." />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8 pl-2 border-l-4 border-brand-500 animate-slide-in-left">My Dashboard</h1>
         

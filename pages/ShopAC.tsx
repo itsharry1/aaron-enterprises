@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { BRANDS } from '../constants';
 import { ShoppingBag, CheckCircle, Loader2, User, Phone, MapPin, IndianRupee, Wind } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const ShopAC: React.FC = () => {
   const navigate = useNavigate();
@@ -87,6 +88,7 @@ const ShopAC: React.FC = () => {
 
   return (
     <div className="min-h-screen py-16 px-4">
+      <SEO title="Buy New AC" description="Get a quote for a new AC from Aaroon Enterprises. We offer top brands and professional installation." />
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12 animate-fade-in-down">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-2xl text-orange-600 mb-6 shadow-sm transform rotate-6">
