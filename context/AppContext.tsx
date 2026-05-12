@@ -21,10 +21,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [user, setUser] = useState<User | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
 
-  const fetchUserProfile = async (userId: string) => {
+  const fetchUserProfile = async (sessionUser: any) => {
     // dynamically import here to avoid circular dep if any, or just import at top
     const { supabase } = await import('../src/supabaseClient');
-    const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
+    const { data, error } = await supabase.from('users').select('*').eq('id', sessionUser.id).single();
     if (data && !error) {
        setUser({
          id: data.id,
@@ -34,7 +34,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
          role: data.role as UserRole
        });
     } else {
-       setUser(null);
+       // Fallback to session user metadata if 'users' table lookup fails
+       setUser({
+         id: sessionUser.id,
+         name: sessionUser.user_metadata?.name || sessionUser.email?.split('@')[0] || 'User',
+         email: sessionUser.email || '',
+         phone: sessionUser.user_metadata?.phone || '',
+         role: UserRole.CUSTOMER
+       });
     }
   };
 
@@ -42,7 +49,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const { supabase } = await import('../src/supabaseClient');
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
-      await fetchUserProfile(session.user.id);
+      await fetchUserProfile(session.user);
       
       // Load bookings
       const { data: bookingsData } = await supabase
