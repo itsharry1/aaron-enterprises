@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
-import { UserRole } from '../types';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { ShieldCheck, User, Mail, Phone, Lock, AlertCircle, Loader2 } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useApp } from '../context/AppContext';
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectParam = searchParams.get('redirect');
   const { signup } = useApp();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -41,19 +42,23 @@ const Signup: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const result = await signup({
-        id: '', // Will be generated
+      const { success, message } = await signup({
+        id: '', // Will be assigned by context
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         password: formData.password,
-        role: UserRole.CUSTOMER
+        role: 'CUSTOMER' as any,
       });
 
-      if (result.success) {
-        navigate('/dashboard');
+      if (!success) {
+        setError(message || 'Signup failed.');
       } else {
-        setError(result.message || 'Signup failed');
+        if (redirectParam) {
+          navigate(redirectParam);
+        } else {
+          navigate('/');
+        }
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -88,7 +93,6 @@ const Signup: React.FC = () => {
               {error}
             </div>
           )}
-
           <div className="space-y-4">
             <div className="relative animate-fade-in-up" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
               <label className="text-xs font-bold text-gray-500 uppercase tracking-wide ml-1 mb-1 block">Full Name</label>
@@ -197,7 +201,7 @@ const Signup: React.FC = () => {
           
           <div className="text-center text-sm text-gray-600 mt-4 animate-fade-in-up" style={{ animationDelay: '0.7s', animationFillMode: 'both' }}>
              Already have an account?{' '}
-             <Link to="/login" className="font-bold text-brand-600 hover:text-brand-500 hover:underline">
+             <Link to={`/login${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`} className="font-bold text-brand-600 hover:text-brand-500 hover:underline">
                Sign in here
              </Link>
           </div>

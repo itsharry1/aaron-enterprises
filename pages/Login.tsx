@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
-import { UserRole } from '../types';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { ShieldCheck, Loader2, AlertCircle, Mail, Lock } from 'lucide-react';
 import SEO from '../components/SEO';
+import { useApp } from '../context/AppContext';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
   const { login } = useApp();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const redirectParam = searchParams.get('redirect');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,21 +19,16 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      const result = await login(email, password);
+      const { success, message } = await login(email, password);
       
-      if (result.success) {
-        // Check if there's a return path
-        const from = location.state?.from;
-
-        if (from) {
-          navigate(from);
-        } else if (email.includes('admin')) {
-           navigate('/admin');
-        } else {
-           navigate('/dashboard');
-        }
+      if (!success) {
+        setError(message || 'Login failed.');
       } else {
-        setError(result.message || 'Login failed');
+        if (redirectParam) {
+          navigate(redirectParam);
+        } else {
+          navigate('/');
+        }
       }
     } catch (err) {
       setError('An error occurred during login');
@@ -135,7 +128,7 @@ const Login: React.FC = () => {
 
           <div className="text-center text-sm text-gray-600 mt-4 animate-fade-in-up" style={{ animationDelay: '0.5s', animationFillMode: 'both' }}>
              Don't have an account?{' '}
-             <Link to="/signup" className="font-bold text-brand-600 hover:text-brand-500 hover:underline">
+             <Link to={`/signup${redirectParam ? `?redirect=${encodeURIComponent(redirectParam)}` : ''}`} className="font-bold text-brand-600 hover:text-brand-500 hover:underline">
                Create one here
              </Link>
           </div>

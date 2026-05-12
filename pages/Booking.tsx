@@ -396,10 +396,8 @@ const Booking: React.FC = () => {
                     : "Our team will review your request and contact you shortly to confirm the details."}
                </p>
                <div className="flex gap-4">
-                  <button onClick={() => navigate('/')} className="px-8 py-3 border border-gray-300 bg-white/50 rounded-xl font-bold hover:bg-white transition-colors">Back to Home</button>
-                  {user && (
-                    <button onClick={() => navigate('/dashboard')} className="px-8 py-3 bg-brand-600 text-white rounded-xl font-bold hover:bg-brand-700 shadow-lg shadow-brand-500/30 transition-transform hover:scale-105">Go to Dashboard</button>
-                  )}
+                  <button onClick={() => navigate('/')} className="flex-1 px-8 py-3 border border-gray-300 bg-white/50 rounded-xl font-bold hover:bg-white transition-colors">Back to Home</button>
+                  <button onClick={() => navigate(user ? '/dashboard' : '/login?redirect=/dashboard')} className="flex-1 px-8 py-3 bg-brand-600 text-white rounded-xl font-bold hover:bg-brand-700 shadow-lg shadow-brand-500/30 transition-transform hover:scale-105">Go to Dashboard</button>
                </div>
             </div>
           )}

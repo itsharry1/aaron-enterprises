@@ -4,16 +4,28 @@ import { Navigate } from 'react-router-dom';
 import { UserRole, BookingStatus } from '../types';
 import { Check, X, Clock, Filter, Search, RefreshCw, AlertCircle, Calendar, MapPin, FileText, CheckCircle, XCircle } from 'lucide-react';
 import SEO from '../components/SEO';
+import { supabase } from '../src/supabaseClient';
 
 const Admin: React.FC = () => {
   const { user, bookings, updateBookingStatus, refreshData } = useApp();
   const [statusFilter, setStatusFilter] = useState<BookingStatus | 'ALL'>('ALL');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [session, setSession] = useState<any>(null);
 
   // Refresh data on mount to ensure we see latest bookings from other sessions
   useEffect(() => {
     refreshData();
+  }, []);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+      setAuthChecked(true);
+    };
+    checkSession();
   }, []);
 
   const handleManualRefresh = () => {
@@ -33,8 +45,17 @@ const Admin: React.FC = () => {
     }
   };
 
-  if (!user || user.role !== UserRole.ADMIN) {
+  if (!authChecked) {
+    return <div>Loading...</div>;
+  }
+
+  if (!session) {
     return <Navigate to="/login" />;
+  }
+
+  // Keep old authorization check if it exists
+  if (user && user.role !== UserRole.ADMIN) {
+    return <Navigate to="/dashboard" />; // Or somewhere else
   }
 
   const pendingBookings = bookings.filter(b => b.status === BookingStatus.PENDING);

@@ -55,7 +55,7 @@ const Navbar: React.FC = () => {
                  </div>
                </div>
             ) : (
-              <Link to="/login" className="text-gray-600 hover:text-brand-600 font-medium flex items-center gap-1 bg-white/50 px-4 py-2 rounded-full border border-white/50 shadow-sm hover:shadow-md transition-all">
+              <Link to={`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} className="text-gray-600 hover:text-brand-600 font-medium flex items-center gap-1 bg-white/50 px-4 py-2 rounded-full border border-white/50 shadow-sm hover:shadow-md transition-all">
                 <User size={18} /> Login
               </Link>
             )}
@@ -99,7 +99,7 @@ const Navbar: React.FC = () => {
                  </button>
               </>
             ) : (
-              <Link to="/login" className="block px-4 py-3 rounded-xl text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition-colors" onClick={closeMenu}>Login</Link>
+              <Link to={`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} className="block px-4 py-3 rounded-xl text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 transition-colors" onClick={closeMenu}>Login</Link>
             )}
             
             <div className="pt-4 mt-2">

@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import { Navigate } from 'react-router-dom';
 import { Calendar, User, Package, LogOut, CheckCircle, Clock, Menu, ShoppingBag, Mail, Phone, MapPin, ShieldCheck, Camera } from 'lucide-react';
 import SEO from '../components/SEO';
+import { supabase } from '../src/supabaseClient';
 
 type DashboardView = 'bookings' | 'amc' | 'profile';
 
@@ -10,16 +11,35 @@ const Dashboard: React.FC = () => {
   const { user, bookings, logout, refreshData } = useApp();
   const [activeView, setActiveView] = useState<DashboardView>('bookings');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [session, setSession] = useState<any>(null);
 
   useEffect(() => {
     refreshData();
   }, [refreshData]);
 
-  if (!user) {
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+      setAuthChecked(true);
+    };
+    checkSession();
+  }, []);
+
+  if (!authChecked) {
+    return <div>Loading...</div>; // simple loading state
+  }
+
+  if (!session) {
     return <Navigate to="/login" />;
   }
   
-  const userBookings = bookings.filter(b => b.userId === user.id || b.customerName === user.name);
+  const userName = user?.name || session?.user?.user_metadata?.full_name || 'User';
+  const userEmail = user?.email || session?.user?.email || '';
+  const firstLetter = userName.charAt(0).toUpperCase();
+
+  const userBookings = bookings.filter(b => b.userId === user?.id || b.customerName === userName);
   const activeAMC = userBookings.filter(b => b.planId && b.status === 'Confirmed');
 
   const renderBookingCard = (booking: any) => {
@@ -149,7 +169,7 @@ const Dashboard: React.FC = () => {
                    <div className="relative z-10">
                       <div className="w-24 h-24 bg-white rounded-full p-1.5 shadow-xl">
                          <div className="w-full h-full bg-gradient-to-br from-brand-100 to-blue-50 rounded-full flex items-center justify-center text-brand-600 text-3xl font-extrabold border border-brand-100">
-                            {user.name.charAt(0).toUpperCase()}
+                            {firstLetter}
                          </div>
                       </div>
                       <button className="absolute bottom-0 right-0 bg-white p-2 rounded-full shadow-md border border-gray-100 text-gray-600 hover:text-brand-600 transition-colors hover:scale-110">
@@ -157,7 +177,7 @@ const Dashboard: React.FC = () => {
                       </button>
                    </div>
                    <div className="mb-3 hidden sm:block relative z-10">
-                      <h3 className="text-2xl font-extrabold text-white drop-shadow-md">{user.name}</h3>
+                      <h3 className="text-2xl font-extrabold text-white drop-shadow-md">{userName}</h3>
                       <p className="text-brand-100 text-sm font-medium drop-shadow-sm flex items-center gap-1">
                         <CheckCircle size={14} className="text-green-400" /> Verified Customer
                       </p>
@@ -167,7 +187,7 @@ const Dashboard: React.FC = () => {
              
              <div className="p-8 pt-20">
                 <div className="sm:hidden mb-8">
-                   <h3 className="text-2xl font-extrabold text-gray-900">{user.name}</h3>
+                   <h3 className="text-2xl font-extrabold text-gray-900">{userName}</h3>
                    <p className="text-brand-600 text-sm font-medium flex items-center gap-1 mt-1">
                      <CheckCircle size={14} className="text-green-500" /> Verified Customer
                    </p>
@@ -188,7 +208,7 @@ const Dashboard: React.FC = () => {
                                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                                         <User size={18} />
                                      </div>
-                                     <input type="text" defaultValue={user.name} className="w-full rounded-xl border-gray-200 border pl-10 pr-4 py-2.5 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium text-gray-900 shadow-sm" />
+                                     <input type="text" defaultValue={userName} className="w-full rounded-xl border-gray-200 border pl-10 pr-4 py-2.5 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium text-gray-900 shadow-sm" />
                                   </div>
                                </div>
                                <div>
@@ -197,7 +217,7 @@ const Dashboard: React.FC = () => {
                                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                                         <Phone size={18} />
                                      </div>
-                                     <input type="tel" defaultValue={user.phone || ""} placeholder="Not set" className="w-full rounded-xl border-gray-200 border pl-10 pr-4 py-2.5 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium text-gray-900 shadow-sm" />
+                                     <input type="tel" defaultValue={user?.phone || ""} placeholder="Not set" className="w-full rounded-xl border-gray-200 border pl-10 pr-4 py-2.5 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium text-gray-900 shadow-sm" />
                                   </div>
                                </div>
                             </div>
@@ -207,7 +227,7 @@ const Dashboard: React.FC = () => {
                                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                                      <Mail size={18} />
                                   </div>
-                                  <input type="email" defaultValue={user.email} className="w-full rounded-xl border-gray-200 border pl-10 pr-4 py-2.5 bg-gray-50 text-gray-500 cursor-not-allowed font-medium shadow-sm" readOnly />
+                                  <input type="email" defaultValue={userEmail} className="w-full rounded-xl border-gray-200 border pl-10 pr-4 py-2.5 bg-gray-50 text-gray-500 cursor-not-allowed font-medium shadow-sm" readOnly />
                                </div>
                                <p className="text-xs text-gray-500 mt-2 flex items-center gap-1.5"><ShieldCheck size={14} className="text-green-500"/> Email is verified and cannot be changed.</p>
                             </div>
@@ -249,11 +269,11 @@ const Dashboard: React.FC = () => {
           <div className="lg:hidden bg-white/60 backdrop-blur-md rounded-2xl shadow-glass p-4 flex items-center justify-between border border-white/50 animate-fade-in-down">
              <div className="flex items-center gap-3">
                <div className="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center text-brand-600 font-bold shadow-inner">
-                 {user.name.charAt(0).toUpperCase()}
+                 {firstLetter}
                </div>
                <div>
-                  <h2 className="font-bold text-gray-900 text-sm">{user.name}</h2>
-                  <p className="text-xs text-gray-500 truncate max-w-[150px]">{user.email}</p>
+                  <h2 className="font-bold text-gray-900 text-sm">{userName}</h2>
+                  <p className="text-xs text-gray-500 truncate max-w-[150px]">{userEmail}</p>
                </div>
              </div>
              <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 bg-white rounded-lg shadow-sm">
@@ -271,11 +291,11 @@ const Dashboard: React.FC = () => {
             {/* Desktop User Info */}
             <div className="hidden lg:flex items-center gap-4 mb-8 p-4 bg-white/40 rounded-xl border border-white/50">
                <div className="w-14 h-14 bg-brand-100 rounded-full flex items-center justify-center text-brand-600 text-xl font-bold shadow-inner">
-                 {user.name.charAt(0).toUpperCase()}
+                 {firstLetter}
                </div>
                <div className="overflow-hidden">
-                  <h2 className="font-bold text-gray-900 truncate">{user.name}</h2>
-                  <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  <h2 className="font-bold text-gray-900 truncate">{userName}</h2>
+                  <p className="text-xs text-gray-500 truncate">{userEmail}</p>
                </div>
             </div>
             
