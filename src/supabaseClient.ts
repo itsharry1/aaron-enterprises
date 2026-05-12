@@ -3,4 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 const SUPABASE_URL = "https://uvmgjzhbwcvqptnbtjar.supabase.co";
 const SUPABASE_PUBLIC_KEY = "sb_publishable_orOSkRSpemen8FrWeKjrig_ky22m9qz";
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY, {
+  auth: {
+    storage: window.sessionStorage,
+  }
+});
