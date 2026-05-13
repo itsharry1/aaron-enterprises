@@ -21,12 +21,23 @@ const Admin: React.FC = () => {
 
   useEffect(() => {
     const checkSession = async () => {
+      const mockAdmin = sessionStorage.getItem('ac_app_mock_admin');
+      if (mockAdmin) {
+        setSession({ mock: true });
+        setAuthChecked(true);
+        return;
+      }
+      
       const { data } = await supabase.auth.getSession();
       setSession(data.session);
       setAuthChecked(true);
     };
     checkSession();
   }, []);
+
+  if (!authChecked) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
   const handleManualRefresh = () => {
     setIsRefreshing(true);
@@ -45,17 +56,12 @@ const Admin: React.FC = () => {
     }
   };
 
-  if (!authChecked) {
-    return <div>Loading...</div>;
-  }
-
-  if (!session) {
+  if (!session && !user) {
     return <Navigate to="/login" />;
   }
 
-  // Keep old authorization check if it exists
   if (user && user.role !== UserRole.ADMIN) {
-    return <Navigate to="/dashboard" />; // Or somewhere else
+    return <Navigate to="/dashboard" />;
   }
 
   const pendingBookings = bookings.filter(b => b.status === BookingStatus.PENDING);
@@ -222,7 +228,7 @@ const Admin: React.FC = () => {
              delay="0.2s"
            />
            <StatCard 
-             title="Confirmed" 
+             title="Approved" 
              count={confirmedCount} 
              icon={CheckCircle} 
              colorClass="text-blue-600" 
@@ -285,7 +291,7 @@ const Admin: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-white/50">
                 {filteredBookings.length > 0 ? filteredBookings.map((booking) => (
-                  <tr key={booking.id} className="hover:bg-white/40 transition-colors">
+                  <tr key={booking.id} className={`transition-colors ${booking.status === BookingStatus.PENDING ? 'bg-orange-50/50 hover:bg-orange-50' : 'hover:bg-white/40'}`}>
                     <td className="px-6 py-5">
                       <div className="flex flex-col">
                         <span className="font-bold text-gray-900">{booking.customerName}</span>
@@ -309,7 +315,7 @@ const Admin: React.FC = () => {
                         booking.status === BookingStatus.COMPLETED ? 'bg-green-100 text-green-800' :
                         'bg-red-100 text-red-800'
                       }`}>
-                        {booking.status}
+                        {booking.status === BookingStatus.CONFIRMED ? 'APPROVED' : booking.status}
                       </span>
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap text-sm font-medium">

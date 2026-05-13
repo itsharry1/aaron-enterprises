@@ -60,10 +60,13 @@ CREATE POLICY "Users can insert their own bookings"
   FOR INSERT
   WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
 
-CREATE POLICY "Users can view their own bookings"
+CREATE POLICY "Admins can view and update all bookings"
   ON public.bookings
-  FOR SELECT
-  USING (auth.uid() = user_id);
+  FOR ALL
+  USING (
+    auth.uid() IN (SELECT id FROM public.users WHERE role = 'ADMIN')
+    OR (auth.uid() = user_id)
+  );
 
 CREATE POLICY "Users can update their own bookings"
   ON public.bookings
