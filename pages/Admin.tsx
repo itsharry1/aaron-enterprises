@@ -64,6 +64,7 @@ const Admin: React.FC = () => {
     return <Navigate to="/dashboard" />;
   }
 
+  const isMockSession = session?.mock;
   const pendingBookings = bookings.filter(b => b.status === BookingStatus.PENDING);
 
   // Filter for the main table
@@ -149,6 +150,16 @@ const Admin: React.FC = () => {
             </div>
           </div>
         </header>
+
+        {isMockSession && (
+           <div className="mb-8 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-yellow-800 flex items-start gap-3">
+              <AlertCircle className="shrink-0 mt-0.5 text-yellow-600" size={20} />
+              <div>
+                 <p className="font-bold">You are using a Mock Admin Session</p>
+                 <p className="text-sm mt-1">Due to Supabase Security Rules (RLS), anonymous mock sessions cannot fetch real user bookings. If you do not see any user requests, you must disable Email Confirmations in your Supabase Auth settings and log in properly with <code className="bg-yellow-100 px-1 rounded">admin@aaroon.com</code> to establish a verified session.</p>
+              </div>
+           </div>
+        )}
 
         {/* Action Required Section - Prominent Display for Pending */}
         {pendingBookings.length > 0 && (

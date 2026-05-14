@@ -1,9 +1,21 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { AppProvider } from './context/AppContext';
+import { AppProvider, useApp } from './context/AppContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import PageLoader from './components/PageLoader';
+
+const GlobalLoader = () => {
+  const { isLoading } = useApp();
+  
+  if (!isLoading) return null;
+  
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+      <PageLoader />
+    </div>
+  );
+};
 import { supabase } from './src/supabaseClient';
 
 // Lazy load pages to split the bundle
@@ -34,6 +46,7 @@ const ScrollToTop = () => {
 const App: React.FC = () => {
   return (
     <AppProvider>
+      <GlobalLoader />
       <Router>
         <ScrollToTop />
         <div className="flex flex-col min-h-screen font-sans text-gray-800">

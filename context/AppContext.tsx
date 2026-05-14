@@ -12,6 +12,8 @@ interface AppContextType {
   addBooking: (booking: Omit<Booking, 'id' | 'createdAt' | 'status' | 'userId'>) => Promise<void>;
   updateBookingStatus: (id: string, status: BookingStatus) => Promise<void>;
   deleteBooking: (id: string) => Promise<void>;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
   refreshData: () => Promise<void>;
 }
 
@@ -20,6 +22,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchUserProfile = async (sessionUser: any) => {
     // dynamically import here to avoid circular dep if any, or just import at top
@@ -50,6 +53,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const loadData = useCallback(async () => {
+    setIsLoading(true);
     const { supabase } = await import('../src/supabaseClient');
     
     // Check mock admin first
@@ -83,6 +87,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }));
         setBookings(formattedBookings);
       }
+      setIsLoading(false);
       return;
     }
 
@@ -124,6 +129,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       setUser(null);
       setBookings([]);
     }
+    
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -142,7 +149,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       authListener = data.subscription;
 
       // Real-time listener for bookings
-      bookingsSubscription = supabase.channel('bookings-channel')
+      const channelId = `bookings-channel-${Math.random()}`;
+      bookingsSubscription = supabase.channel(channelId)
         .on(
           'postgres_changes',
           { event: '*', schema: 'public', table: 'bookings' },
@@ -158,95 +166,140 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
          authListener.unsubscribe();
       }
       if (bookingsSubscription) {
-         bookingsSubscription.unsubscribe();
+         import('../src/supabaseClient').then(({ supabase }) => {
+           supabase.removeChannel(bookingsSubscription);
+         });
       }
     };
   }, [loadData]);
 
 
   const refreshData = useCallback(async () => {
-    await loadData();
+    setIsLoading(true);
+    try {
+      await loadData();
+    } finally {
+      setIsLoading(false);
+    }
   }, [loadData]);
 
   const login = useCallback(async (email: string, password: string): Promise<{ success: boolean; message?: string }> => {
-    const { supabase } = await import('../src/supabaseClient');
-    
-    if (email === 'admin@aaroon.com' && password === 'admin') {
-      let { error, data } = await supabase.auth.signInWithPassword({ email, password });
+    setIsLoading(true);
+    try {
+      const { supabase } = await import('../src/supabaseClient');
       
-      const setMockAdmin = async () => {
-        const adminUser: User = { 
-          id: 'admin-default', 
-          name: 'Admin', 
-          email: 'admin@aaroon.com', 
-          role: UserRole.ADMIN,
-          phone: '9999999999'
-        };
-        sessionStorage.setItem('ac_app_mock_admin', JSON.stringify(adminUser));
-        await loadData();
-      };
+      if (email === 'admin@aaroon.com' && password === 'admin') {
+        let { error, data } = await supabase.auth.signInWithPassword({ email, password });
+        
+        if (error && (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed'))) {
+          // Auto sign-up admin if not exists in Supabase
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email, 
+            password,
+            options: {
+              data: { name: 'Admin', phone: '9999999999' }
+            }
+          });
+          
+          if (signUpData.user) {
+             await supabase.from('users').upsert({
+               id: signUpData.user.id,
+               name: 'Admin',
+               email: email,
+               phone: '9999999999',
+               role: 'ADMIN'
+             });
+             // Attempt to login again
+             const loginResult = await supabase.auth.signInWithPassword({ email, password });
+             data = loginResult.data;
+             error = loginResult.error;
+          }
+        }
 
-      if (error && error.message.includes('Invalid login credentials')) {
-        // Fallback to purely mock admin
-        await setMockAdmin();
+        const setMockAdmin = async () => {
+          const adminUser: User = { 
+            id: 'admin-default', 
+            name: 'Admin', 
+            email: 'admin@aaroon.com', 
+            role: UserRole.ADMIN,
+            phone: '9999999999'
+          };
+          sessionStorage.setItem('ac_app_mock_admin', JSON.stringify(adminUser));
+          await loadData();
+        };
+
+        if (error) {
+          // Fallback to purely mock admin if supabase auth is failing (e.g. no internet or RLS issue)
+          await setMockAdmin();
+          return { success: true };
+        }
+        
+        await loadData();
         return { success: true };
-      } else if (error) {
+      }
+
+      const { error, data } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
         return { success: false, message: error.message };
       }
       
-      // Even if supersuccessful, also set mock admin just in case RLS fails, wait no, 
-      // fetchUserProfile will handle the real session if successful!
-      if (!error && data.session) {
-         // Just to be sure the role is right in frontend
-         // userProfile sets it properly!
+      // Force admin role in DB so RLS allows fetching all bookings
+      if (email === 'admin@aaroon.com' && data?.session?.user) {
+        await supabase.from('users').upsert({
+           id: data.session.user.id,
+           name: 'Admin',
+           email: email,
+           phone: '9999999999',
+           role: 'ADMIN'
+        });
       }
       
       await loadData();
       return { success: true };
+    } finally {
+      setIsLoading(false);
     }
-
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      return { success: false, message: error.message };
-    }
-    await loadData();
-    return { success: true };
   }, [loadData]);
 
   const signup = useCallback(async (userData: User): Promise<{ success: boolean; message?: string }> => {
-    const { supabase } = await import('../src/supabaseClient');
-    const { data, error } = await supabase.auth.signUp({
-      email: userData.email,
-      password: userData.password,
-      options: {
-        data: {
+    setIsLoading(true);
+    try {
+      const { supabase } = await import('../src/supabaseClient');
+      const { data, error } = await supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        options: {
+          data: {
+            name: userData.name,
+            phone: userData.phone
+          }
+        }
+      });
+
+      if (error) {
+        return { success: false, message: error.message };
+      }
+
+      if (data.user) {
+        // Create user profile in 'users' table
+        const { error: profileError } = await supabase.from('users').insert([{
+          id: data.user.id,
           name: userData.name,
-          phone: userData.phone
+          email: userData.email,
+          phone: userData.phone,
+          role: UserRole.CUSTOMER
+        }]);
+
+        if (profileError) {
+          console.error('Error creating user profile:', profileError);
         }
       }
-    });
 
-    if (error) {
-      return { success: false, message: error.message };
+      await loadData();
+      return { success: true };
+    } finally {
+      setIsLoading(false);
     }
-
-    if (data.user) {
-      // Create user profile in 'users' table
-      const { error: profileError } = await supabase.from('users').insert([{
-        id: data.user.id,
-        name: userData.name,
-        email: userData.email,
-        phone: userData.phone,
-        role: UserRole.CUSTOMER
-      }]);
-
-      if (profileError) {
-        console.error('Error creating user profile:', profileError);
-      }
-    }
-
-    await loadData();
-    return { success: true };
   }, [loadData]);
 
   const logout = useCallback(async () => {
@@ -276,61 +329,76 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   const addBooking = useCallback(async (bookingData: Omit<Booking, 'id' | 'createdAt' | 'status' | 'userId'>) => {
-    const newBooking = {
-      user_id: user?.id || null,
-      customer_name: bookingData.customerName,
-      customer_phone: bookingData.customerPhone,
-      customer_address: bookingData.customerAddress,
-      booking_type: bookingData.bookingType,
-      service_id: bookingData.serviceId,
-      plan_id: bookingData.planId,
-      purchase_details: bookingData.purchaseDetails,
-      date: bookingData.date,
-      time: bookingData.time,
-      status: BookingStatus.PENDING,
-      ac_type: bookingData.acType,
-      notes: bookingData.notes
-    };
+    setIsLoading(true);
+    try {
+      const newBooking = {
+        user_id: user?.id || null,
+        customer_name: bookingData.customerName,
+        customer_phone: bookingData.customerPhone,
+        customer_address: bookingData.customerAddress,
+        booking_type: bookingData.bookingType,
+        service_id: bookingData.serviceId,
+        plan_id: bookingData.planId,
+        purchase_details: bookingData.purchaseDetails,
+        date: bookingData.date,
+        time: bookingData.time,
+        status: BookingStatus.PENDING,
+        ac_type: bookingData.acType,
+        notes: bookingData.notes
+      };
 
-    const { supabase } = await import('../src/supabaseClient');
-    const { error } = await supabase
-      .from('bookings')
-      .insert([newBooking]);
+      const { supabase } = await import('../src/supabaseClient');
+      const { error } = await supabase
+        .from('bookings')
+        .insert([newBooking]);
 
-    if (error) {
-      console.error('Error adding booking:', error);
-      return;
+      if (error) {
+        console.error('Error adding booking:', error);
+        return;
+      }
+      
+      await loadData();
+    } finally {
+      setIsLoading(false);
     }
-    
-    await loadData();
   }, [user, loadData]);
 
   const updateBookingStatus = useCallback(async (id: string, status: BookingStatus) => {
-    const { supabase } = await import('../src/supabaseClient');
-    const { error } = await supabase
-      .from('bookings')
-      .update({ status })
-      .eq('id', id);
+    setIsLoading(true);
+    try {
+      const { supabase } = await import('../src/supabaseClient');
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status })
+        .eq('id', id);
 
-    if (error) {
-      console.error("Error updating booking status", error);
-      return;
+      if (error) {
+        console.error("Error updating booking status", error);
+        return;
+      }
+      await loadData();
+    } finally {
+      setIsLoading(false);
     }
-    await loadData();
   }, [loadData]);
 
   const deleteBooking = useCallback(async (id: string) => {
-    const { supabase } = await import('../src/supabaseClient');
-    const { error } = await supabase
-      .from('bookings')
-      .delete()
-      .eq('id', id);
+    setIsLoading(true);
+    try {
+      const { supabase } = await import('../src/supabaseClient');
+      const { error } = await supabase
+        .from('bookings')
+        .delete()
+        .eq('id', id);
 
-    if (error) {
-      console.error("Error deleting booking", error);
-      return;
+      if (error) {
+        console.error("Error deleting booking", error);
+        return;
+      }
+      await loadData();
+    } finally {
+      setIsLoading(false);
     }
-    await loadData();
   }, [loadData]);
 
 
@@ -345,6 +413,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addBooking, 
     updateBookingStatus, 
     deleteBooking,
+    isLoading,
+    setIsLoading,
     refreshData
   }), [
     user, 
@@ -357,6 +427,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addBooking, 
     updateBookingStatus, 
     deleteBooking,
+    isLoading,
+    setIsLoading,
     refreshData
   ]);
 
