@@ -27,9 +27,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const fetchUserProfile = async (sessionUser: any) => {
     // dynamically import here to avoid circular dep if any, or just import at top
     const { supabase } = await import('../src/supabaseClient');
+    
+    // Automatically elevate this specific user ID to ADMIN if not already
+    if (sessionUser.id === 'ef63d4f2-49ac-4e68-a7ef-84cf70a5eedd' || sessionUser.email === 'admin@aaroon.com') {
+      await supabase.from('users').upsert({
+        id: sessionUser.id,
+        name: sessionUser.user_metadata?.name || 'Admin',
+        email: sessionUser.email,
+        role: 'ADMIN',
+        phone: sessionUser.user_metadata?.phone || '9999999999'
+      }, { onConflict: 'id' });
+    }
+
     const { data, error } = await supabase.from('users').select('*').eq('id', sessionUser.id).single();
     if (data && !error) {
-       const role = (data.email === 'admin@aaroon.com' || data.role === 'ADMIN') ? UserRole.ADMIN : (data.role as UserRole);
+       const role = (data.email === 'admin@aaroon.com' || sessionUser.id === 'ef63d4f2-49ac-4e68-a7ef-84cf70a5eedd' || data.role === 'ADMIN') ? UserRole.ADMIN : (data.role as UserRole);
        setUser({
          id: data.id,
          name: data.name,
@@ -40,7 +52,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
        return role;
     } else {
        // Fallback to session user metadata if 'users' table lookup fails
-       const role = sessionUser.email === 'admin@aaroon.com' ? UserRole.ADMIN : UserRole.CUSTOMER;
+       const role = (sessionUser.email === 'admin@aaroon.com' || sessionUser.id === 'ef63d4f2-49ac-4e68-a7ef-84cf70a5eedd') ? UserRole.ADMIN : UserRole.CUSTOMER;
        setUser({
          id: sessionUser.id,
          name: sessionUser.user_metadata?.name || sessionUser.email?.split('@')[0] || 'User',
@@ -240,7 +252,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       const { error, data } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        return { success: false, message: error.message };
+        let msg = error.message;
+        if (msg.includes('Invalid login credentials')) {
+          msg = 'Invalid credentials. If you just signed up, you may need to confirm your email address (check your inbox), or disable "Confirm email" in your Supabase project Auth settings.';
+        }
+        return { success: false, message: msg };
       }
       
       // Force admin role in DB so RLS allows fetching all bookings
