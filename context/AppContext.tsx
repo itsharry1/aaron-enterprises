@@ -254,7 +254,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (error) {
         let msg = error.message;
         if (msg.includes('Invalid login credentials')) {
-          msg = 'Invalid credentials. If you just signed up, you may need to confirm your email address (check your inbox), or disable "Confirm email" in your Supabase project Auth settings.';
+          msg = 'You do not have an account. Please sign up first.';
         }
         return { success: false, message: msg };
       }
