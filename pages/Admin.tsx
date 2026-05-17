@@ -7,7 +7,7 @@ import SEO from '../components/SEO';
 import { supabase } from '../src/supabaseClient';
 
 const Admin: React.FC = () => {
-  const { user, bookings, updateBookingStatus, refreshData } = useApp();
+  const { user, bookings, updateBookingStatus, refreshData, isLoading } = useApp();
   const [statusFilter, setStatusFilter] = useState<BookingStatus | 'ALL'>('ALL');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
@@ -35,7 +35,7 @@ const Admin: React.FC = () => {
     checkSession();
   }, []);
 
-  if (!authChecked) {
+  if (!authChecked || isLoading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
@@ -146,7 +146,7 @@ const Admin: React.FC = () => {
             </button>
             <div className="bg-white/80 px-4 py-2 rounded-xl shadow-sm border border-white/60 font-bold flex items-center gap-2 text-sm text-gray-800">
                <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
-               Admin: {user.name}
+               Admin: {user?.name || 'Admin'}
             </div>
           </div>
         </header>
